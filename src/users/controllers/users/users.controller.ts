@@ -12,6 +12,7 @@ import {
 import { createUserDto } from 'src/users/dtos/CreateUser.dto';
 import { UpdateUserDto } from 'src/users/dtos/UpdateUser.dto';
 import { UsersService } from 'src/users/services/users/users.service';
+import * as bcrypt from 'bcrypt';
 
 @Controller('users')
 export class UsersController {
@@ -26,15 +27,23 @@ export class UsersController {
   //CREATE
   @Post('/register')
   createUser(@Body() CreateUserDto: createUserDto) {
-    // const { ...userDetails, confirmPassword } = createUserDto;
-    return this.userService.createuser(CreateUserDto);
+    return this.userService.createUser(CreateUserDto);
   }
   //LOGIN
   @Post('/login')
-  loginUser(@Body() CreateUserDto: createUserDto) {
-    console.log({ createUserDto });
-    const user = this.userService.findUser('test6');
-    return user;
+  async loginUser(@Body() loginUserDto: createUserDto) {
+    const { username, email, password } = loginUserDto;
+    const user = await this.userService.findUser(username);
+    if (!user) {
+      return { message: 'User not found' };
+    }
+    console.log('password', password, '  ', 'user.password', user.password);
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (passwordMatch) {
+      return user;
+    } else {
+      return { message: 'Invalid password' };
+    }
   }
 
   //UPDATE
