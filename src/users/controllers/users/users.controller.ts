@@ -37,8 +37,8 @@ export class UsersController {
     if (!user) {
       return { message: 'User not found' };
     }
-    console.log('password', password, '  ', 'user.password', user.password);
-    const passwordMatch = await bcrypt.compare(password, user.password);
+    console.log('password', password, '  ', 'user.password', user[0].password);
+    const passwordMatch = await bcrypt.compare(password, user[0].password);
     if (passwordMatch) {
       return user;
     } else {
