@@ -13,6 +13,7 @@ export class Wishlist {
   @PrimaryGeneratedColumn()
   id: number;
 
+  username: string;
   @ManyToOne(() => User, (user) => user.wishlist)
   user: User;
 

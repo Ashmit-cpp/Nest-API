@@ -1,3 +1,4 @@
+// src/controllers/products.controller.ts
 import {
   Controller,
   Get,
@@ -35,6 +36,7 @@ export class ProductsController {
   ): Promise<Product> {
     const createdBy = req.user.username;
     productData.createdBy = createdBy;
+
     return this.productsService.create(productData);
   }
   @UseGuards(JwtAuthGuard)

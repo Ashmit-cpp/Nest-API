@@ -4,12 +4,14 @@ import {
   Column,
   OneToOne,
   OneToMany,
+  Unique,
 } from 'typeorm';
 import { IsNotEmpty, IsEmail, MinLength } from 'class-validator';
 import { Cart } from './cart.entity';
 import { Wishlist } from './wishlist.entity';
 
 @Entity()
+@Unique(['username', 'email'])  // Use the Unique decorator on the entity level
 export class User {
   @PrimaryGeneratedColumn()
   id: number;

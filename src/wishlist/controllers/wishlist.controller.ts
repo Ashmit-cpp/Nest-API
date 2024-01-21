@@ -1,21 +1,37 @@
 // src/wishlist/wishlist.controller.ts
-import { Controller, Get, Post, Param, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Param,
+  Body,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { WishlistService } from '../services/wishlist.service';
+import { Wishlist } from 'src/typeorm/entities/wishlist.entity';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('wishlist')
 export class WishlistController {
   constructor(private readonly wishlistService: WishlistService) {}
 
-  @Get(':userId')
-  async getWishlist(@Param('userId') userId: number) {
-    return this.wishlistService.getWishlistByUserId(userId);
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  async getWishlist(@Request() req) {
+    console.log(req.user.username);
+
+    return this.wishlistService.getWishlistByUserName(req.user.username);
   }
 
-  @Post('add/:userId/:productId')
+  @UseGuards(JwtAuthGuard)
+  @Post('add/:productId')
   async addToWishlist(
-    @Param('userId') userId: number,
+    @Request() req,
     @Param('productId') productId: number,
-  ) {
-    return this.wishlistService.addToWishlist(userId, productId);
+  ): Promise<Wishlist> {
+    console.log(req.user.username);
+
+    return this.wishlistService.addToWishlist(req.user.username, productId);
   }
 }

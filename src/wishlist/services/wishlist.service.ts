@@ -1,6 +1,7 @@
 // src/wishlist/wishlist.service.ts
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { User } from 'src/typeorm/entities/user.entity';
 import { Wishlist } from 'src/typeorm/entities/wishlist.entity';
 import { Repository } from 'typeorm';
 
@@ -9,41 +10,54 @@ export class WishlistService {
   constructor(
     @InjectRepository(Wishlist)
     private readonly wishlistRepository: Repository<Wishlist>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) {}
-
-  async getWishlistByUserId(userId: number): Promise<Wishlist> {
+  async getWishlistByUserName(userName: string): Promise<Wishlist> {
     try {
       const existingWishlist = await this.wishlistRepository.findOne({
-        where: { user: { id: userId } },
-        relations: ['products'],
+        where: { user: { username: userName } },
+        relations: ['products', 'user'],
       });
 
       if (existingWishlist) {
+        console.log(existingWishlist);
         return existingWishlist;
       }
 
       // If wishlist doesn't exist, create a new one
+      const user = await this.userRepository.findOne({
+        where: { username: userName },
+      });
+
+      if (!user) {
+        throw new NotFoundException(`User with username ${userName} not found`);
+      }
+
       const newWishlist = this.wishlistRepository.create({
-        user: { id: userId },
+        user: user,
         products: [],
       });
+
       return await this.wishlistRepository.save(newWishlist);
     } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error; // Re-throw NotFoundException directly
+      }
+
       throw new NotFoundException(
-        `Wishlist for user with ID ${userId} not found`,
+        `Wishlist for user with username ${userName} not found`,
       );
     }
   }
 
-  async addToWishlist(userId: number, productId: number): Promise<string> {
+  async addToWishlist(userName: string, productId: number): Promise<Wishlist> {
     try {
-      const wishlist = await this.getWishlistByUserId(userId);
+      const wishlist = await this.getWishlistByUserName(userName);
       wishlist.products.push({ id: productId } as any);
-      await this.wishlistRepository.save(wishlist);
-
-      return `Product with ID ${productId} successfully added to the wishlist for user with ID ${userId}.`;
+      return await this.wishlistRepository.save(wishlist);
     } catch (error) {
-      throw new NotFoundException(`User with ID ${userId} not found`);
+      throw new NotFoundException(`User with ID ${userName} not found`);
     }
   }
 }
