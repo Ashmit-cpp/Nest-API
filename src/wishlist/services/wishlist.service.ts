@@ -51,6 +51,32 @@ export class WishlistService {
     }
   }
 
+  async removeFromWishlist(
+    userName: string,
+    productId: number,
+  ): Promise<Wishlist> {
+    try {
+      const wishlist = await this.getWishlistByUserName(userName);
+      const index = wishlist.products.findIndex(
+        (product) => product.id === productId,
+      );
+
+      if (index === -1) {
+        throw new NotFoundException(
+          `Product with ID ${productId} not found in the wishlist`,
+        );
+      }
+
+      wishlist.products.splice(index, 1);
+
+      return await this.wishlistRepository.save(wishlist);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new NotFoundException(`User with username ${userName} not found`);
+    }
+  }
   async addToWishlist(userName: string, productId: number): Promise<Wishlist> {
     try {
       const wishlist = await this.getWishlistByUserName(userName);

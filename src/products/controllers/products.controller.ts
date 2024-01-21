@@ -24,8 +24,8 @@ export class ProductsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string): Promise<Product | undefined> {
-    return this.productsService.findOne(+id);
+  findOne(@Param('id') id: number): Promise<Product | undefined> {
+    return this.productsService.findOne(id);
   }
 
   @UseGuards(JwtAuthGuard)

@@ -13,6 +13,7 @@ import { Category } from './typeorm/entities/category.entity';
 import { Wishlist } from './typeorm/entities/wishlist.entity';
 import { ProductsModule } from './products/products.module';
 import { WishlistModule } from './wishlist/wishlist.module';
+import { CartModule } from './cart/cart.module';
 
 @Module({
   imports: [
@@ -36,7 +37,7 @@ import { WishlistModule } from './wishlist/wishlist.module';
     AuthModule,
     ProductsModule,
     WishlistModule,
-
+    CartModule,
   ],
   controllers: [AppController],
   providers: [AppService],

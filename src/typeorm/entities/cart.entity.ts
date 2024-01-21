@@ -12,6 +12,7 @@ import { CartItem } from './cart-item.entity';
 export class Cart {
   @PrimaryGeneratedColumn()
   id: number;
+  username: string;
 
   @OneToOne(() => User, (user) => user.cart)
   @JoinColumn()
