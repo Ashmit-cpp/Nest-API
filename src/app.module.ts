@@ -12,6 +12,7 @@ import { Product } from './typeorm/entities/product.entity';
 import { Category } from './typeorm/entities/category.entity';
 import { Wishlist } from './typeorm/entities/wishlist.entity';
 import { ProductsModule } from './products/products.module';
+import { WishlistModule } from './wishlist/wishlist.module';
 
 @Module({
   imports: [
@@ -34,6 +35,8 @@ import { ProductsModule } from './products/products.module';
     UsersModule,
     AuthModule,
     ProductsModule,
+    WishlistModule,
+
   ],
   controllers: [AppController],
   providers: [AppService],

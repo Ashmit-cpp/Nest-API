@@ -45,4 +45,7 @@ export class Product {
 
   @OneToMany(() => CartItem, (cartItem) => cartItem.product)
   cartItems: CartItem[];
+
+  @Column({ nullable: true })
+  createdBy: string;
 }
