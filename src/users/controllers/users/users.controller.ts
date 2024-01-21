@@ -9,8 +9,8 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { createUserDto } from 'src/users/dtos/CreateUser.dto';
-import { UpdateUserDto } from 'src/users/dtos/UpdateUser.dto';
+import { createUserDto } from 'src/utils/dtos/CreateUser.dto';
+import { UpdateUserDto } from 'src/utils/dtos/UpdateUser.dto';
 import { UsersService } from 'src/users/services/users/users.service';
 import * as bcrypt from 'bcrypt';
 
