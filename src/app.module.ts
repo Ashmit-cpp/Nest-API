@@ -11,6 +11,7 @@ import { CartItem } from './typeorm/entities/cart-item.entity';
 import { Product } from './typeorm/entities/product.entity';
 import { Category } from './typeorm/entities/category.entity';
 import { Wishlist } from './typeorm/entities/wishlist.entity';
+import { ProductsModule } from './products/products.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { Wishlist } from './typeorm/entities/wishlist.entity';
     TypeOrmModule.forFeature([User]),
     UsersModule,
     AuthModule,
+    ProductsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
