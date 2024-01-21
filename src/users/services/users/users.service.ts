@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/typeorm/entities/User';
+import { User } from 'src/typeorm/entities/user.entity';
 import { CreateUserParams, UpdateUserParams } from 'src/utils/types';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -22,14 +22,21 @@ export class UsersService {
   }
 
   async createUser(userDetails: CreateUserParams) {
-    //check if user already exists here
+    // Check if user already exists by email or username
+    const existingUser = await this.userRepository.findOne({
+      where: [{ email: userDetails.email }, { username: userDetails.username }],
+    });
+
+    if (existingUser) {
+      throw new Error('User with the same email or username already exists.');
+    }
+
     const hashedPassword = await bcrypt.hash(userDetails.password, 10);
     const newUser = this.userRepository.create({
-      email: userDetails.email,
-      username: userDetails.username,
+      ...userDetails,
       password: hashedPassword,
-      createdAt: new Date(),
     });
+
     return this.userRepository.save(newUser);
   }
 
