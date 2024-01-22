@@ -14,6 +14,7 @@ import { Wishlist } from './typeorm/entities/wishlist.entity';
 import { ProductsModule } from './products/products.module';
 import { WishlistModule } from './wishlist/wishlist.module';
 import { CartModule } from './cart/cart.module';
+import { Review } from './typeorm/entities/review.entity';
 
 @Module({
   imports: [
@@ -27,7 +28,7 @@ import { CartModule } from './cart/cart.module';
         username: configService.get('DB_USERNAME'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
-        entities: [User, Cart, CartItem, Product, Category, Wishlist],
+        entities: [User, Cart, CartItem, Product, Category, Wishlist, Review],
         synchronize: true,
       }),
       inject: [ConfigService],

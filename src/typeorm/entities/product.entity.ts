@@ -10,6 +10,7 @@ import {
 import { IsNotEmpty, IsNumber, Min, IsOptional, IsUrl } from 'class-validator';
 import { Category } from './category.entity';
 import { CartItem } from './cart-item.entity';
+import { Review } from './review.entity';
 
 @Entity()
 export class Product {
@@ -42,6 +43,9 @@ export class Product {
   @ManyToMany(() => Category, (category) => category.products)
   @JoinTable()
   categories: Category[];
+
+  @OneToMany(() => Review, (review) => review.product, { cascade: true })
+  reviews: Review[]; 
 
   @OneToMany(() => CartItem, (cartItem) => cartItem.product)
   cartItems: CartItem[];

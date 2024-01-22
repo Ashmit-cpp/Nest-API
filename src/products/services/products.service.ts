@@ -2,6 +2,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from 'src/typeorm/entities/product.entity';
+import { Review } from 'src/typeorm/entities/review.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -9,6 +10,8 @@ export class ProductsService {
   constructor(
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
+    @InjectRepository(Review)
+    private readonly reviewRepository: Repository<Review>,
   ) {}
 
   async findAll(): Promise<Product[]> {
@@ -18,6 +21,7 @@ export class ProductsService {
   async findOne(id: number): Promise<Product | undefined> {
     return this.productRepository.findOne({
       where: { id },
+      relations: ['reviews'],
     });
   }
 
@@ -39,4 +43,17 @@ export class ProductsService {
   async remove(id: number): Promise<void> {
     await this.productRepository.delete(id);
   }
+
+  async addReview(
+    product: Product,
+    reviewData: { text: string; rating: number },
+  ): Promise<Review> {
+    const review = new Review();
+    review.text = reviewData.text;
+    review.rating = reviewData.rating;
+    review.product = product;
+    await this.reviewRepository.save(review);
+    return review;
+  }
+
 }

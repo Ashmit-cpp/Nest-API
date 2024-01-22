@@ -15,6 +15,7 @@ import {
 import { ProductsService } from '../services/products.service';
 import { Product } from 'src/typeorm/entities/product.entity';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { Review } from 'src/typeorm/entities/review.entity';
 
 @Controller('products')
 export class ProductsController {
@@ -38,7 +39,7 @@ export class ProductsController {
   ): Promise<Product> {
     const createdBy = req.user.username;
     productData.createdBy = createdBy;
-
+    productData.reviews = [];
     return this.productsService.create(productData);
   }
 
@@ -61,9 +62,28 @@ export class ProductsController {
     }
 
     if (product.createdBy !== req.user.username) {
-      throw new UnauthorizedException('You are not authorized to delete this product');
+      throw new UnauthorizedException(
+        'You are not authorized to delete this product',
+      );
     }
 
     await this.productsService.remove(id);
   }
+
+  // @UseGuards(JwtAuthGuard)
+  @Put('/addreview/:id')
+  async addReview(
+    @Param('id') id: string,
+    @Body() reviewData: { text: string; rating: number },
+  ): Promise<Review | undefined> {
+    const product = await this.productsService.findOne(+id);
+
+    if (!product) {
+      throw new NotFoundException(`Product with id ${id} not found`);
+    }
+    const check = await this.productsService.addReview(product, reviewData);
+    console.log(check);
+    return check;
+  }
+
 }
