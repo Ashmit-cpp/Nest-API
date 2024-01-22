@@ -13,6 +13,7 @@ export class WishlistService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
   ) {}
+
   async getWishlistByUserName(userName: string): Promise<Wishlist> {
     try {
       const existingWishlist = await this.wishlistRepository.findOne({
@@ -21,7 +22,6 @@ export class WishlistService {
       });
 
       if (existingWishlist) {
-        console.log(existingWishlist);
         return existingWishlist;
       }
 
@@ -57,17 +57,17 @@ export class WishlistService {
   ): Promise<Wishlist> {
     try {
       const wishlist = await this.getWishlistByUserName(userName);
-      const index = wishlist.products.findIndex(
-        (product) => product.id === productId,
-      );
 
-      if (index === -1) {
-        throw new NotFoundException(
-          `Product with ID ${productId} not found in the wishlist`,
-        );
-      }
+      const updatedProducts = wishlist.products.reduce((acc, product) => {
+        if (product.id == productId) {
+          // console.log('product.id', product.id);
+          // console.log('productId', productId);
+          return acc;
+        }
+        return [...acc, product];
+      }, [] as any[]);
 
-      wishlist.products.splice(index, 1);
+      wishlist.products = updatedProducts;
 
       return await this.wishlistRepository.save(wishlist);
     } catch (error) {
@@ -77,6 +77,7 @@ export class WishlistService {
       throw new NotFoundException(`User with username ${userName} not found`);
     }
   }
+
   async addToWishlist(userName: string, productId: number): Promise<Wishlist> {
     try {
       const wishlist = await this.getWishlistByUserName(userName);

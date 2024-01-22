@@ -9,6 +9,8 @@ import {
   Body,
   UseGuards,
   Request,
+  NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { ProductsService } from '../services/products.service';
 import { Product } from 'src/typeorm/entities/product.entity';
@@ -39,6 +41,7 @@ export class ProductsController {
 
     return this.productsService.create(productData);
   }
+
   @UseGuards(JwtAuthGuard)
   @Put(':id')
   update(
@@ -47,9 +50,20 @@ export class ProductsController {
   ): Promise<Product | undefined> {
     return this.productsService.update(+id, productData);
   }
+
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  remove(@Param('id') id: string): Promise<void> {
-    return this.productsService.remove(+id);
+  async remove(@Param('id') id: number, @Request() req): Promise<void> {
+    const product = await this.productsService.findOne(id);
+
+    if (!product) {
+      throw new NotFoundException(`Product with id ${id} not found`);
+    }
+
+    if (product.createdBy !== req.user.username) {
+      throw new UnauthorizedException('You are not authorized to delete this product');
+    }
+
+    await this.productsService.remove(id);
   }
 }

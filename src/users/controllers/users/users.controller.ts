@@ -8,11 +8,13 @@ import {
   Patch,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { createUserDto } from 'src/utils/dtos/CreateUser.dto';
 import { UpdateUserDto } from 'src/utils/dtos/UpdateUser.dto';
 import { UsersService } from 'src/users/services/users/users.service';
 import * as bcrypt from 'bcrypt';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('users')
 export class UsersController {
@@ -47,6 +49,7 @@ export class UsersController {
   }
 
   //UPDATE
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   async updateUserById(
     @Param('id', ParseIntPipe) id: number,
@@ -55,6 +58,7 @@ export class UsersController {
     await this.userService.updateUser(id, updateUserDto);
   }
   //DELETE
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async deleteUserById(@Param('id', ParseIntPipe) id: number) {
     await this.userService.deleteUser(id);
