@@ -56,4 +56,19 @@ export class ProductsService {
     return review;
   }
 
+  async deleteReviews(product: Product): Promise<void> {
+    const { reviews } = product;
+
+    if (reviews && reviews.length > 0) {
+      await Promise.all(
+        reviews.map(async (review: Review) => {
+          await this.productRepository
+            .createQueryBuilder()
+            .relation(Product, 'reviews')
+            .of(product.id)
+            .remove(review.id);
+        }),
+      );
+    }
+  }
 }

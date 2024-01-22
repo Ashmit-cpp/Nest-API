@@ -56,21 +56,24 @@ export class ProductsController {
   @Delete(':id')
   async remove(@Param('id') id: number, @Request() req): Promise<void> {
     const product = await this.productsService.findOne(id);
-
+  
     if (!product) {
       throw new NotFoundException(`Product with id ${id} not found`);
     }
-
+  
     if (product.createdBy !== req.user.username) {
       throw new UnauthorizedException(
         'You are not authorized to delete this product',
       );
     }
-
+  
+    await this.productsService.deleteReviews(product);
+  
+    // Now, you can safely delete the product
     await this.productsService.remove(id);
   }
 
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Put('/addreview/:id')
   async addReview(
     @Param('id') id: string,
