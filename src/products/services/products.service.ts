@@ -14,12 +14,18 @@ export class ProductsService {
     private readonly reviewRepository: Repository<Review>,
   ) {}
 
-  async findAll(): Promise<Product[]> {
-    return this.productRepository.find();
+  async findAll({ page, limit }): Promise<Product[]> {
+    const skip = (page - 1) * limit;
+    return this.productRepository.find({
+      take: limit,
+      skip,
+      relations: ['reviews'],
+    });
   }
 
   async findOne(id: number): Promise<Product | undefined> {
     return this.productRepository.findOne({
+      // select: []
       where: { id },
       relations: ['reviews'],
     });

@@ -11,6 +11,7 @@ import {
   Request,
   NotFoundException,
   UnauthorizedException,
+  Query,
 } from '@nestjs/common';
 import { ProductsService } from '../services/products.service';
 import { Product } from 'src/typeorm/entities/product.entity';
@@ -22,10 +23,12 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Get()
-  findAll(): Promise<Product[]> {
-    return this.productsService.findAll();
+  async findAll(
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+  ): Promise<Product[]> {
+    return this.productsService.findAll({ page, limit });
   }
-
   @Get(':id')
   findOne(@Param('id') id: number): Promise<Product | undefined> {
     return this.productsService.findOne(id);
@@ -56,19 +59,19 @@ export class ProductsController {
   @Delete(':id')
   async remove(@Param('id') id: number, @Request() req): Promise<void> {
     const product = await this.productsService.findOne(id);
-  
+
     if (!product) {
       throw new NotFoundException(`Product with id ${id} not found`);
     }
-  
+
     if (product.createdBy !== req.user.username) {
       throw new UnauthorizedException(
         'You are not authorized to delete this product',
       );
     }
-  
+
     await this.productsService.deleteReviews(product);
-  
+
     // Now, you can safely delete the product
     await this.productsService.remove(id);
   }
@@ -88,5 +91,4 @@ export class ProductsController {
     console.log(check);
     return check;
   }
-
 }

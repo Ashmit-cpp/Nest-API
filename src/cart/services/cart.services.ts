@@ -75,6 +75,7 @@ export class CartService {
         (item) => item.product.id === productId,
       );
       console.log('Existing Cart Item:', existingCartItem);
+
       if (existingCartItem) {
         existingCartItem.quantity += quantity;
       } else {
@@ -90,6 +91,34 @@ export class CartService {
       return await this.cartRepository.save(cart);
     } catch (error) {
       console.error('Error in addToCart:', error);
+      if (error instanceof NotFoundException) {
+        throw error; // Re-throw NotFoundException directly
+      }
+
+      throw new NotFoundException(`User with username ${userName} not found`);
+    }
+  }
+
+  async deleteFromCart(userName: string, productId: number): Promise<Cart> {
+    try {
+      const cart = await this.getCartByUserName(userName);
+
+      const index = cart.items.findIndex(
+        (item) => item.product.id == productId,
+      );
+      console.log(index);
+      if (index !== -1) {
+        // Remove the item from the cart
+        cart.items.splice(index, 1);
+      } else {
+        throw new NotFoundException(
+          `Item with product ID ${productId} not found in the cart`,
+        );
+      }
+
+      return await this.cartRepository.save(cart);
+    } catch (error) {
+      console.error('Error in deleteFromCart:', error);
       if (error instanceof NotFoundException) {
         throw error; // Re-throw NotFoundException directly
       }

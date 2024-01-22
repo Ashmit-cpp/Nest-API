@@ -7,6 +7,7 @@ import {
   Body,
   Request,
   UseGuards,
+  Delete,
 } from '@nestjs/common';
 import { Cart } from 'src/typeorm/entities/cart.entity';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -30,5 +31,14 @@ export class CartController {
     @Body('quantity') quantity: number,
   ): Promise<Cart> {
     return this.cartService.addToCart(req.user.username, productId, quantity);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('delete/:productId')
+  async deleteFromCart(
+    @Request() req,
+    @Param('productId') productId: number,
+  ): Promise<Cart> {
+    return this.cartService.deleteFromCart(req.user.username, productId);
   }
 }

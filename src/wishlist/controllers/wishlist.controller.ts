@@ -12,7 +12,6 @@ export class WishlistController {
   @Get()
   async getWishlist(@Request() req): Promise<Wishlist> {
     console.log(req.user.username);
-
     return this.wishlistService.getWishlistByUserName(req.user.username);
   }
 
@@ -23,7 +22,6 @@ export class WishlistController {
     @Param('productId') productId: number,
   ): Promise<Wishlist> {
     console.log(req.user.username);
-
     return this.wishlistService.addToWishlist(req.user.username, productId);
   }
 
