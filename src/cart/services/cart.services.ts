@@ -19,7 +19,6 @@ export class CartService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
   ) {}
-  // src/cart/cart.service.ts
   async getCartByUserName(userName: string): Promise<Cart> {
     try {
       const existingCart = await this.cartRepository.findOne({
@@ -92,7 +91,7 @@ export class CartService {
     } catch (error) {
       console.error('Error in addToCart:', error);
       if (error instanceof NotFoundException) {
-        throw error; // Re-throw NotFoundException directly
+        throw error; 
       }
 
       throw new NotFoundException(`User with username ${userName} not found`);

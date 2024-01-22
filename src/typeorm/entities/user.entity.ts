@@ -11,7 +11,7 @@ import { Cart } from './cart.entity';
 import { Wishlist } from './wishlist.entity';
 
 @Entity()
-@Unique(['username', 'email'])  // Use the Unique decorator on the entity level
+@Unique(['username', 'email'])
 export class User {
   @PrimaryGeneratedColumn()
   id: number;

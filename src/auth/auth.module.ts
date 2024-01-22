@@ -14,8 +14,8 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     TypeOrmModule.forFeature([User]),
     PassportModule,
     JwtModule.register({
-      secret: 'your-secret-key', // Replace with your own secret key
-      signOptions: { expiresIn: '1h' }, // Set the expiration time for the token
+      secret: 'randomstring', 
+      signOptions: { expiresIn: '2h' }, 
     }),
   ],
   controllers: [AuthUsersController],
