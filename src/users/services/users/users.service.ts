@@ -1,9 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/typeorm/entities/user.entity';
-import { CreateUserParams, UpdateUserParams } from 'src/utils/types';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { createUserDto } from 'src/utils/dtos/CreateUser.dto';
 
 @Injectable()
 export class UsersService {
@@ -12,38 +16,70 @@ export class UsersService {
   ) {}
 
   async findUser(username: string): Promise<any> {
-    const user = await this.userRepository.findBy({ username });
-
-    if (!user || user.length === 0) {
+    try {
+      const user = await this.userRepository.findBy({ username });
+      return user;
+    } catch (error) {
       throw new NotFoundException('User not found');
     }
-
-    return user;
   }
 
-  async createUser(userDetails: CreateUserParams) {
-    // Check if user already exists by email or username
-    const existingUser = await this.userRepository.findOne({
-      where: [{ email: userDetails.email }, { username: userDetails.username }],
-    });
+  async createUser(userDetails: createUserDto) {
+    try {
+      // Check if user already exists by email or username
+      const existingUser = await this.userRepository.findOne({
+        where: [
+          { email: userDetails.email },
+          { username: userDetails.username },
+        ],
+      });
 
-    if (existingUser) {
-      throw new Error('User with the same email or username already exists.');
+      if (existingUser) {
+        throw new ConflictException(
+          'User with the same email or username already exists.',
+        );
+      }
+
+      const hashedPassword = await bcrypt.hash(userDetails.password, 10);
+      const newUser = this.userRepository.create({
+        ...userDetails,
+        password: hashedPassword,
+      });
+
+      return this.userRepository.save(newUser);
+    } catch (error) {
+      throw error;
     }
-
-    const hashedPassword = await bcrypt.hash(userDetails.password, 10);
-    const newUser = this.userRepository.create({
-      ...userDetails,
-      password: hashedPassword,
-    });
-
-    return this.userRepository.save(newUser);
   }
 
-  updateUser(id: number, updateUserDetails: UpdateUserParams) {
-    return this.userRepository.update({ id }, { ...updateUserDetails });
+  async updateUser(id: number, updateUserDetails: createUserDto) {
+    try {
+      const result = await this.userRepository.update(
+        { id },
+        { ...updateUserDetails },
+      );
+
+      if (result.affected === 0) {
+        throw new NotFoundException('User not found');
+      }
+
+      return result;
+    } catch (error) {
+      throw error;
+    }
   }
-  deleteUser(id: number) {
-    return this.userRepository.delete({ id });
+
+  async deleteUser(id: number) {
+    try {
+      const result = await this.userRepository.delete({ id });
+
+      if (result.affected === 0) {
+        throw new NotFoundException('User not found');
+      }
+
+      return result;
+    } catch (error) {
+      throw error;
+    }
   }
 }

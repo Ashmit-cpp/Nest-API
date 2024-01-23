@@ -11,7 +11,7 @@ import {
 import { WishlistService } from '../services/wishlist.service';
 import { Wishlist } from 'src/typeorm/entities/wishlist.entity';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { ApiSecurity, ApiTags } from '@nestjs/swagger';
+import { ApiParam, ApiResponse, ApiSecurity, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Wishlist')
 @Controller('wishlist')
@@ -21,6 +21,11 @@ export class WishlistController {
   @ApiSecurity('JWT-auth')
   @UseGuards(JwtAuthGuard)
   @Get()
+  @ApiResponse({
+    status: 200,
+    description: 'Retrieve user wishlist',
+    type: Wishlist,
+  })
   async getWishlist(@Request() req): Promise<Wishlist> {
     console.log(req.user.username);
     return this.wishlistService.getWishlistByUserName(req.user.username);
@@ -29,6 +34,12 @@ export class WishlistController {
   @ApiSecurity('JWT-auth')
   @UseGuards(JwtAuthGuard)
   @Post('add/:productId')
+  @ApiParam({ name: 'productId', type: 'number' })
+  @ApiResponse({
+    status: 201,
+    description: 'Add product to wishlist',
+    type: Wishlist,
+  })
   async addToWishlist(
     @Request() req,
     @Param('productId') productId: number,
@@ -40,6 +51,12 @@ export class WishlistController {
   @ApiSecurity('JWT-auth')
   @UseGuards(JwtAuthGuard)
   @Delete('remove/:productId')
+  @ApiParam({ name: 'productId', type: 'number' })
+  @ApiResponse({
+    status: 200,
+    description: 'Remove product from wishlist',
+    type: Wishlist,
+  })
   async removeFromWishlist(
     @Request() req,
     @Param('productId') productId: number,
