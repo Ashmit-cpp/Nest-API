@@ -6,10 +6,12 @@ import {
   ValidationPipe,
   UseGuards,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { AuthUsersService } from 'src/auth/services/auth-users/auth-users.service';
 import { SignDto } from 'src/utils/dtos/sign.dto';
 
+@ApiTags('Auth')
 @Controller('auth/users')
 export class AuthUsersController {
   constructor(private readonly authUsersService: AuthUsersService) {}

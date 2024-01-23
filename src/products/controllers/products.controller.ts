@@ -17,7 +17,9 @@ import { ProductsService } from '../services/products.service';
 import { Product } from 'src/typeorm/entities/product.entity';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Review } from 'src/typeorm/entities/review.entity';
+import { ApiSecurity, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Products')
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
@@ -33,7 +35,7 @@ export class ProductsController {
   findOne(@Param('id') id: number): Promise<Product | undefined> {
     return this.productsService.findOne(id);
   }
-
+  @ApiSecurity('JWT-auth')
   @UseGuards(JwtAuthGuard)
   @Post('/create')
   create(
@@ -46,6 +48,7 @@ export class ProductsController {
     return this.productsService.create(productData);
   }
 
+  @ApiSecurity('JWT-auth')
   @UseGuards(JwtAuthGuard)
   @Put(':id')
   update(
@@ -55,6 +58,7 @@ export class ProductsController {
     return this.productsService.update(+id, productData);
   }
 
+  @ApiSecurity('JWT-auth')
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async remove(@Param('id') id: number, @Request() req): Promise<void> {
@@ -71,11 +75,10 @@ export class ProductsController {
     }
 
     await this.productsService.deleteReviews(product);
-
-    // Now, you can safely delete the product
     await this.productsService.remove(id);
   }
 
+  @ApiSecurity('JWT-auth')
   @UseGuards(JwtAuthGuard)
   @Put('/addreview/:id')
   async addReview(

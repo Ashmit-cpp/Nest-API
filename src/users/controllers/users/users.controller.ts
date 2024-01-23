@@ -15,8 +15,10 @@ import { UpdateUserDto } from 'src/utils/dtos/UpdateUser.dto';
 import { UsersService } from 'src/users/services/users/users.service';
 import * as bcrypt from 'bcrypt';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { ApiSecurity, ApiTags } from '@nestjs/swagger';
 
 @Controller('users')
+@ApiTags('User')
 export class UsersController {
   constructor(private userService: UsersService) {}
   //READ
@@ -49,6 +51,7 @@ export class UsersController {
   }
 
   //UPDATE
+  @ApiSecurity('JWT-auth')
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
   async updateUserById(
@@ -58,6 +61,7 @@ export class UsersController {
     await this.userService.updateUser(id, updateUserDto);
   }
   //DELETE
+  @ApiSecurity('JWT-auth')
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async deleteUserById(@Param('id', ParseIntPipe) id: number) {

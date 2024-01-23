@@ -91,7 +91,7 @@ export class CartService {
     } catch (error) {
       console.error('Error in addToCart:', error);
       if (error instanceof NotFoundException) {
-        throw error; 
+        throw error;
       }
 
       throw new NotFoundException(`User with username ${userName} not found`);

@@ -69,7 +69,6 @@ export class WishlistService {
 
       wishlist.products = updatedProducts;
       return await this.wishlistRepository.save(wishlist);
-      
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
