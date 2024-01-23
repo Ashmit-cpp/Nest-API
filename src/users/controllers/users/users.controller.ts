@@ -1,3 +1,4 @@
+// src/controllers/users.controller.ts
 import {
   Body,
   Controller,
@@ -14,7 +15,13 @@ import { createUserDto } from 'src/utils/dtos/CreateUser.dto';
 import { UpdateUserDto } from 'src/utils/dtos/UpdateUser.dto';
 import { UsersService } from 'src/users/services/users/users.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { ApiParam, ApiResponse, ApiSecurity, ApiTags } from '@nestjs/swagger';
+import {
+  ApiParam,
+  ApiResponse,
+  ApiSecurity,
+  ApiTags,
+  ApiOperation,
+} from '@nestjs/swagger';
 
 @Controller('users')
 @ApiTags('User')
@@ -31,6 +38,7 @@ export class UsersController {
     status: 200,
     description: 'Returns the user with the specified username',
   })
+  @ApiOperation({ summary: 'Retrieve user by username' })
   async getUsers(@Param('username') username: string) {
     const users = await this.userService.findUser(username);
     console.log(users);
@@ -42,8 +50,9 @@ export class UsersController {
   @ApiResponse({
     status: 201,
     description: 'Registers a new user',
-    type: createUserDto, 
+    type: createUserDto,
   })
+  @ApiOperation({ summary: 'Register a new user' })
   createUser(@Body() CreateUserDto: createUserDto) {
     return this.userService.createUser(CreateUserDto);
   }
@@ -57,6 +66,7 @@ export class UsersController {
     status: 204,
     description: 'Updates user by id',
   })
+  @ApiOperation({ summary: 'Update user by id' })
   async updateUserById(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
@@ -73,6 +83,7 @@ export class UsersController {
     status: 204,
     description: 'Deletes user by id',
   })
+  @ApiOperation({ summary: 'Delete user by id' })
   async deleteUserById(@Param('id', ParseIntPipe) id: number) {
     await this.userService.deleteUser(id);
   }

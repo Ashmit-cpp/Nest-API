@@ -23,6 +23,7 @@ import {
   ApiResponse,
   ApiSecurity,
   ApiTags,
+  ApiOperation, // Import ApiOperation
 } from '@nestjs/swagger';
 
 @ApiTags('Products')
@@ -31,6 +32,7 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Get()
+  @ApiOperation({ summary: 'Retrieve a list of products' })
   @ApiResponse({
     status: 200,
     description: 'Retrieve a list of products',
@@ -45,6 +47,7 @@ export class ProductsController {
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Retrieve product by id' })
   @ApiParam({ name: 'id', type: 'number' })
   @ApiResponse({
     status: 200,
@@ -62,6 +65,7 @@ export class ProductsController {
   @ApiSecurity('JWT-auth')
   @UseGuards(JwtAuthGuard)
   @Post('/create')
+  @ApiOperation({ summary: 'Create a new product' })
   @ApiResponse({
     status: 201,
     description: 'Create a new product',
@@ -80,6 +84,7 @@ export class ProductsController {
   @ApiSecurity('JWT-auth')
   @UseGuards(JwtAuthGuard)
   @Put(':id')
+  @ApiOperation({ summary: 'Update product by id' })
   @ApiParam({ name: 'id', type: 'string' })
   @ApiResponse({
     status: 200,
@@ -96,6 +101,7 @@ export class ProductsController {
   @ApiSecurity('JWT-auth')
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
+  @ApiOperation({ summary: 'Delete product by id' })
   @ApiParam({ name: 'id', type: 'number' })
   @ApiResponse({ status: 204, description: 'Delete product by id' })
   async remove(@Param('id') id: number, @Request() req): Promise<void> {
@@ -115,9 +121,14 @@ export class ProductsController {
     await this.productsService.remove(id);
   }
 
+  @ApiBody({
+    type: Review,
+    description: 'Add a review to the product',
+  })
   @ApiSecurity('JWT-auth')
   @UseGuards(JwtAuthGuard)
   @Put('/addreview/:id')
+  @ApiOperation({ summary: 'Add a review to the product' })
   @ApiParam({ name: 'id', type: 'string' })
   @ApiResponse({
     status: 200,
