@@ -15,6 +15,7 @@ import { ProductsModule } from './products/products.module';
 import { WishlistModule } from './wishlist/wishlist.module';
 import { CartModule } from './cart/cart.module';
 import { Review } from './typeorm/entities/review.entity';
+import { ReportingModule } from './reporting/reporting.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { Review } from './typeorm/entities/review.entity';
     ProductsModule,
     WishlistModule,
     CartModule,
+    ReportingModule,
   ],
   controllers: [AppController],
   providers: [AppService],
