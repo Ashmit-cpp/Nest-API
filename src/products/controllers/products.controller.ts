@@ -17,8 +17,7 @@ import { ProductsService } from '../services/products.service';
 import { Product } from 'src/typeorm/entities/product.entity';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Review } from 'src/typeorm/entities/review.entity';
-import { ApiSecurity, ApiTags   ApiOperation, // Import ApiOperation
-} from '@nestjs/swagger';
+import { ApiSecurity, ApiTags, ApiOperation, ApiBody } from '@nestjs/swagger';
 
 @ApiTags('Products')
 @Controller('products')
