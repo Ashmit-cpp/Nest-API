@@ -15,9 +15,9 @@ export class UsersService {
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
-  async findUser(username: string): Promise<User> {
+  async findUser(username: string): Promise<any> {
     try {
-      const user = await this.userRepository.findOneBy({ username });
+      const user = await this.userRepository.findBy({ username });
       return user;
     } catch (error) {
       throw new NotFoundException('User not found');

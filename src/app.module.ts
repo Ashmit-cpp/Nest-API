@@ -17,7 +17,7 @@ import { ProductsModule } from './products/products.module';
 import { WishlistModule } from './wishlist/wishlist.module';
 import { CartModule } from './cart/cart.module';
 import { Review } from './typeorm/entities/review.entity';
-import { ReportingModule } from './reporting/reporting.module';
+// import { ReportingModule } from './reporting/reporting.module';
 import { RedisOptions } from './utils/dtos/app-options.constants';
 
 @Module({
@@ -44,7 +44,6 @@ import { RedisOptions } from './utils/dtos/app-options.constants';
     ProductsModule,
     WishlistModule,
     CartModule,
-    ReportingModule,
   ],
   controllers: [AppController],
   providers: [AppService],
