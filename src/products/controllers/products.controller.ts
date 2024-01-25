@@ -23,11 +23,11 @@ import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @ApiTags('Products')
 @Controller('products')
-@UseInterceptors(CacheInterceptor)
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Get()
+  @UseInterceptors(CacheInterceptor)
   @ApiOperation({ summary: 'Retrieve a list of products' })
   async findAll(
     @Query('page') page: number = 1,
@@ -37,6 +37,7 @@ export class ProductsController {
     return this.productsService.findAll({ page, limit, name });
   }
   @Get(':id')
+  @UseInterceptors(CacheInterceptor)
   @ApiOperation({ summary: 'Retrieve product by id' })
   findOne(@Param('id') id: number): Promise<Product | undefined> {
     return this.productsService.findOne(id);

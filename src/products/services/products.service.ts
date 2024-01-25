@@ -46,6 +46,7 @@ export class ProductsService {
   }
 
   async findOne(id: number): Promise<Product | undefined> {
+    console.log('fetching');
     return this.productRepository.findOne({
       // select: []
       where: { id },
