@@ -18,10 +18,8 @@ import {
   ApiTags,
   ApiOperation,
 } from '@nestjs/swagger';
-import { CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager';
 import { Body, UseInterceptors } from '@nestjs/common/decorators';
 import { Inject, Injectable } from '@nestjs/common';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
 
 @ApiTags('Wishlist')
 @Controller('wishlist')

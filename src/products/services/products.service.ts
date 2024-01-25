@@ -1,13 +1,16 @@
 // src/modules/product/product.service.ts
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from 'src/typeorm/entities/product.entity';
 import { Review } from 'src/typeorm/entities/review.entity';
 import { Repository } from 'typeorm';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class ProductsService {
   constructor(
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
     @InjectRepository(Review)
@@ -15,8 +18,16 @@ export class ProductsService {
   ) {}
 
   async findAll({ page, limit, name }): Promise<Product[]> {
-    const skip = (page - 1) * limit;
+    const cacheKey = `products:${name || 'all'}:${page}:${limit}`;
+    console.log(cacheKey);
+    const cachedData = await this.cacheManager.get<Product[]>(cacheKey);
 
+    if (cachedData) {
+      console.log('returning cached data', cachedData);
+      return cachedData;
+    }
+    // If not, fetch the data from the database
+    const skip = (page - 1) * limit;
     const queryBuilder = this.productRepository
       .createQueryBuilder('product')
       .leftJoinAndSelect('product.reviews', 'reviews')
@@ -28,7 +39,10 @@ export class ProductsService {
       queryBuilder.where('product.name LIKE :name', { name: `%${name}%` });
     }
 
-    return queryBuilder.getMany();
+    const products = await queryBuilder.getMany();
+    // Cache the fetched data for future use
+    await this.cacheManager.set(cacheKey, products); 
+    return products;
   }
 
   async findOne(id: number): Promise<Product | undefined> {

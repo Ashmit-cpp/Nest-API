@@ -1,6 +1,6 @@
 import { CacheModuleAsyncOptions } from '@nestjs/cache-manager';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { redisStore } from 'cache-manager-redis-store';
+// import { redisStore } from 'cache-manager-redis-store';
 
 export const RedisOptions: CacheModuleAsyncOptions = {
   isGlobal: true,
@@ -13,11 +13,9 @@ export const RedisOptions: CacheModuleAsyncOptions = {
       },
     };
 
-    const store = await redisStore(redisConfig);
+    // const store = await redisStore(redisConfig);
 
-    return {
-      store: () => store,
-    };
+  
   },
   inject: [ConfigService],
 };
