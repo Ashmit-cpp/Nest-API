@@ -35,15 +35,11 @@ export class WishlistController {
   @ApiSecurity('JWT-auth')
   @UseGuards(JwtAuthGuard)
   @Get()
-  @ApiOperation({ summary: 'Retrieve user wishlist' })
   @ApiResponse({
     status: 200,
-    description: 'Returns the wishlist for the authenticated user',
+    description: 'Retrieve user wishlist',
     type: Wishlist,
   })
-  @UseInterceptors(CacheInterceptor)
-  @CacheKey('custom_key')
-  @CacheTTL(20)
   async getWishlist(@Request() req): Promise<Wishlist> {
     console.log(req.user.username);
     console.log('Generated Cache Key:', 'custom_key');
@@ -55,11 +51,10 @@ export class WishlistController {
   @ApiSecurity('JWT-auth')
   @UseGuards(JwtAuthGuard)
   @Post('add/:productId')
-  @ApiOperation({ summary: 'Add product to wishlist' })
   @ApiParam({ name: 'productId', type: 'number' })
   @ApiResponse({
     status: 201,
-    description: 'Adds the specified product to the wishlist',
+    description: 'Add product to wishlist',
     type: Wishlist,
   })
   async addToWishlist(
@@ -73,11 +68,10 @@ export class WishlistController {
   @ApiSecurity('JWT-auth')
   @UseGuards(JwtAuthGuard)
   @Delete('remove/:productId')
-  @ApiOperation({ summary: 'Remove product from wishlist' })
   @ApiParam({ name: 'productId', type: 'number' })
   @ApiResponse({
     status: 200,
-    description: 'Removes the specified product from the wishlist',
+    description: 'Remove product from wishlist',
     type: Wishlist,
   })
   async removeFromWishlist(

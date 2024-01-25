@@ -14,6 +14,7 @@ import {
 import { createUserDto } from 'src/utils/dtos/CreateUser.dto';
 import { UpdateUserDto } from 'src/utils/dtos/UpdateUser.dto';
 import { UsersService } from 'src/users/services/users/users.service';
+import * as bcrypt from 'bcrypt';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import {
   ApiParam,
@@ -27,8 +28,7 @@ import {
 @ApiTags('User')
 export class UsersController {
   constructor(private userService: UsersService) {}
-
-  // READ
+  //READ
   @Get(':username')
   @ApiParam({
     name: 'username',
@@ -38,26 +38,39 @@ export class UsersController {
     status: 200,
     description: 'Returns the user with the specified username',
   })
-  @ApiOperation({ summary: 'Retrieve user by username' })
   async getUsers(@Param('username') username: string) {
     const users = await this.userService.findUser(username);
     console.log(users);
     return users;
   }
-
-  // CREATE
+  //CREATE
   @Post('/register')
   @ApiResponse({
     status: 201,
     description: 'Registers a new user',
-    type: createUserDto,
+    type: createUserDto, 
   })
-  @ApiOperation({ summary: 'Register a new user' })
   createUser(@Body() CreateUserDto: createUserDto) {
     return this.userService.createUser(CreateUserDto);
   }
+  //LOGIN
+  @Post('/login')
+  async loginUser(@Body() loginUserDto: createUserDto) {
+    const { username, email, password } = loginUserDto;
+    const user = await this.userService.findUser(username);
+    if (!user) {
+      return { message: 'User not found' };
+    }
+    console.log('password', password, '  ', 'user.password', user[0].password);
+    const passwordMatch = await bcrypt.compare(password, user[0].password);
+    if (passwordMatch) {
+      return user;
+    } else {
+      return { message: 'Invalid password' };
+    }
+  }
 
-  // UPDATE
+  //UPDATE
   @ApiSecurity('JWT-auth')
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
@@ -66,15 +79,13 @@ export class UsersController {
     status: 204,
     description: 'Updates user by id',
   })
-  @ApiOperation({ summary: 'Update user by id' })
   async updateUserById(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
   ) {
     await this.userService.updateUser(id, updateUserDto);
   }
-
-  // DELETE
+  //DELETE
   @ApiSecurity('JWT-auth')
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
@@ -83,7 +94,6 @@ export class UsersController {
     status: 204,
     description: 'Deletes user by id',
   })
-  @ApiOperation({ summary: 'Delete user by id' })
   async deleteUserById(@Param('id', ParseIntPipe) id: number) {
     await this.userService.deleteUser(id);
   }

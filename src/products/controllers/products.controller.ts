@@ -17,13 +17,7 @@ import { ProductsService } from '../services/products.service';
 import { Product } from 'src/typeorm/entities/product.entity';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Review } from 'src/typeorm/entities/review.entity';
-import {
-  ApiBody,
-  ApiParam,
-  ApiResponse,
-  ApiSecurity,
-  ApiTags,
-  ApiOperation, // Import ApiOperation
+import { ApiSecurity, ApiTags   ApiOperation, // Import ApiOperation
 } from '@nestjs/swagger';
 
 @ApiTags('Products')
@@ -33,12 +27,6 @@ export class ProductsController {
 
   @Get()
   @ApiOperation({ summary: 'Retrieve a list of products' })
-  @ApiResponse({
-    status: 200,
-    description: 'Retrieve a list of products',
-    type: Product,
-    isArray: true,
-  })
   async findAll(
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10,
@@ -46,32 +34,15 @@ export class ProductsController {
   ): Promise<Product[]> {
     return this.productsService.findAll({ page, limit, name });
   }
-
   @Get(':id')
   @ApiOperation({ summary: 'Retrieve product by id' })
-  @ApiParam({ name: 'id', type: 'number' })
-  @ApiResponse({
-    status: 200,
-    description: 'Retrieve product by id',
-    type: Product,
-  })
   findOne(@Param('id') id: number): Promise<Product | undefined> {
     return this.productsService.findOne(id);
   }
-
-  @ApiBody({
-    type: Product,
-    description: 'Create a new product',
-  })
   @ApiSecurity('JWT-auth')
   @UseGuards(JwtAuthGuard)
   @Post('/create')
   @ApiOperation({ summary: 'Create a new product' })
-  @ApiResponse({
-    status: 201,
-    description: 'Create a new product',
-    type: Product,
-  })
   create(
     @Body() productData: Partial<Product>,
     @Request() req,
@@ -86,12 +57,6 @@ export class ProductsController {
   @UseGuards(JwtAuthGuard)
   @Put(':id')
   @ApiOperation({ summary: 'Update product by id' })
-  @ApiParam({ name: 'id', type: 'string' })
-  @ApiResponse({
-    status: 200,
-    description: 'Update product by id',
-    type: Product,
-  })
   update(
     @Param('id') id: string,
     @Body() productData: Partial<Product>,
@@ -103,8 +68,6 @@ export class ProductsController {
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   @ApiOperation({ summary: 'Delete product by id' })
-  @ApiParam({ name: 'id', type: 'number' })
-  @ApiResponse({ status: 204, description: 'Delete product by id' })
   async remove(@Param('id') id: number, @Request() req): Promise<void> {
     const product = await this.productsService.findOne(id);
 
@@ -130,12 +93,6 @@ export class ProductsController {
   @UseGuards(JwtAuthGuard)
   @Put('/addreview/:id')
   @ApiOperation({ summary: 'Add a review to the product' })
-  @ApiParam({ name: 'id', type: 'string' })
-  @ApiResponse({
-    status: 200,
-    description: 'Add a review to the product',
-    type: Review,
-  })
   async addReview(
     @Param('id') id: string,
     @Body() reviewData: { text: string; rating: number },

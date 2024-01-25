@@ -1,10 +1,5 @@
 // src/wishlist/wishlist.service.ts
-import {
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-  ConflictException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/typeorm/entities/user.entity';
 import { Wishlist } from 'src/typeorm/entities/wishlist.entity';
@@ -30,6 +25,7 @@ export class WishlistService {
         return existingWishlist;
       }
 
+      // If wishlist doesn't exist, create a new one
       const user = await this.userRepository.findOne({
         where: { username: userName },
       });
@@ -64,16 +60,12 @@ export class WishlistService {
 
       const updatedProducts = wishlist.products.reduce((acc, product) => {
         if (product.id == productId) {
+          // console.log('product.id', product.id);
+          // console.log('productId', productId);
           return acc;
         }
         return [...acc, product];
       }, [] as any[]);
-
-      if (wishlist.products.length === updatedProducts.length) {
-        throw new NotFoundException(
-          `Product with ID ${productId} not found in the wishlist`,
-        );
-      }
 
       wishlist.products = updatedProducts;
       return await this.wishlistRepository.save(wishlist);
@@ -88,27 +80,10 @@ export class WishlistService {
   async addToWishlist(userName: string, productId: number): Promise<Wishlist> {
     try {
       const wishlist = await this.getWishlistByUserName(userName);
-
-      const isProductInWishlist = wishlist.products.some(
-        (product) => product.id == productId,
-      );
-      if (isProductInWishlist) {
-        throw new ConflictException('Product is already in the wishlist');
-      }
-
       wishlist.products.push({ id: productId } as any);
       return await this.wishlistRepository.save(wishlist);
     } catch (error) {
-      if (
-        error instanceof NotFoundException ||
-        error instanceof ConflictException
-      ) {
-        throw error; // Re-throw specific exceptions directly
-      }
-
-      throw new InternalServerErrorException(
-        'An unexpected error occurred while adding to the wishlist.',
-      );
+      throw new NotFoundException(`User with ID ${userName} not found`);
     }
   }
 }

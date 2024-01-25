@@ -1,4 +1,5 @@
 // src/controllers/auth-users.controller.ts
+// src/modules/auth/controllers/auth-users.controller.ts
 import {
   Controller,
   Post,
@@ -16,6 +17,7 @@ import {
 import { AuthUsersService } from 'src/auth/services/auth-users/auth-users.service';
 import { SignDto } from 'src/utils/dtos/sign.dto';
 
+@ApiTags('Auth')
 @Controller('auth/users')
 @ApiTags('Authentication')
 export class AuthUsersController {

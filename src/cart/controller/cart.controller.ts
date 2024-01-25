@@ -1,4 +1,5 @@
 // src/controllers/cart.controller.ts
+// src/cart/cart.controller.ts
 import {
   Controller,
   Get,
@@ -12,13 +13,7 @@ import {
 import { Cart } from 'src/typeorm/entities/cart.entity';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CartService } from '../services/cart.services';
-import {
-  ApiParam,
-  ApiResponse,
-  ApiSecurity,
-  ApiTags,
-  ApiOperation,
-} from '@nestjs/swagger';
+import { ApiParam, ApiResponse, ApiSecurity, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Cart')
 @Controller('cart')
@@ -28,7 +23,6 @@ export class CartController {
   @ApiSecurity('JWT-auth')
   @UseGuards(JwtAuthGuard)
   @Get()
-  @ApiOperation({ summary: 'Get the cart for the authenticated user' })
   @ApiResponse({
     status: 200,
     description: 'Returns the cart for the authenticated user',
@@ -41,7 +35,6 @@ export class CartController {
   @ApiSecurity('JWT-auth')
   @UseGuards(JwtAuthGuard)
   @Post('add/:productId')
-  @ApiOperation({ summary: 'Add a product to the cart' })
   @ApiParam({
     name: 'productId',
     description: 'The ID of the product to add to the cart',
@@ -63,7 +56,6 @@ export class CartController {
   @ApiSecurity('JWT-auth')
   @UseGuards(JwtAuthGuard)
   @Delete('delete/:productId')
-  @ApiOperation({ summary: 'Delete a product from the cart' })
   @ApiParam({
     name: 'productId',
     description: 'The ID of the product to delete from the cart',
