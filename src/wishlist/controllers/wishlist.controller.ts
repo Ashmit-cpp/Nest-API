@@ -18,11 +18,19 @@ import {
   ApiTags,
   ApiOperation,
 } from '@nestjs/swagger';
+import { CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager';
+import { Body, UseInterceptors } from '@nestjs/common/decorators';
+import { Inject, Injectable } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 
 @ApiTags('Wishlist')
 @Controller('wishlist')
+// @UseInterceptors(CacheInterceptor)
 export class WishlistController {
-  constructor(private readonly wishlistService: WishlistService) {}
+  constructor(
+    // @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private readonly wishlistService: WishlistService,
+  ) {}
 
   @ApiSecurity('JWT-auth')
   @UseGuards(JwtAuthGuard)
@@ -33,8 +41,14 @@ export class WishlistController {
     description: 'Returns the wishlist for the authenticated user',
     type: Wishlist,
   })
+  @UseInterceptors(CacheInterceptor)
+  @CacheKey('custom_key')
+  @CacheTTL(20)
   async getWishlist(@Request() req): Promise<Wishlist> {
     console.log(req.user.username);
+    console.log('Generated Cache Key:', 'custom_key');
+    // await this.cacheManager.add('key');*
+
     return this.wishlistService.getWishlistByUserName(req.user.username);
   }
 

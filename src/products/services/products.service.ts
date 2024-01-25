@@ -14,13 +14,21 @@ export class ProductsService {
     private readonly reviewRepository: Repository<Review>,
   ) {}
 
-  async findAll({ page, limit }): Promise<Product[]> {
+  async findAll({ page, limit, name }): Promise<Product[]> {
     const skip = (page - 1) * limit;
-    return this.productRepository.find({
-      take: limit,
-      skip,
-      relations: ['reviews'],
-    });
+
+    const queryBuilder = this.productRepository
+      .createQueryBuilder('product')
+      .leftJoinAndSelect('product.reviews', 'reviews')
+      .take(limit)
+      .skip(skip)
+      .orderBy('product.id', 'DESC');
+
+    if (name) {
+      queryBuilder.where('product.name LIKE :name', { name: `%${name}%` });
+    }
+
+    return queryBuilder.getMany();
   }
 
   async findOne(id: number): Promise<Product | undefined> {
