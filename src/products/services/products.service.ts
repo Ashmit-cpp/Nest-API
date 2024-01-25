@@ -19,7 +19,7 @@ export class ProductsService {
 
   async findAll({ page, limit, name }): Promise<Product[]> {
     const cacheKey = `products:${name || 'all'}:${page}:${limit}`;
-    console.log(cacheKey);
+    console.log('returning cached data', cacheKey);
     const cachedData = await this.cacheManager.get<Product[]>(cacheKey);
 
     if (cachedData) {
@@ -41,7 +41,7 @@ export class ProductsService {
 
     const products = await queryBuilder.getMany();
     // Cache the fetched data for future use
-    await this.cacheManager.set(cacheKey, products); 
+    await this.cacheManager.set(cacheKey, products);
     return products;
   }
 

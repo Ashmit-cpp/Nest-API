@@ -5,11 +5,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Product } from 'src/typeorm/entities/product.entity';
 import { Review } from 'src/typeorm/entities/review.entity';
 import { CacheModule } from '@nestjs/cache-manager';
+import { RedisOptions } from 'src/utils/app-options.constants';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Product, Review]),
-    CacheModule.register({isGlobal: true}),
+    CacheModule.registerAsync(RedisOptions),
   ],
   controllers: [ProductsController],
   providers: [ProductsService],

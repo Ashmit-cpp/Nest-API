@@ -12,15 +12,18 @@ import {
   NotFoundException,
   UnauthorizedException,
   Query,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ProductsService } from '../services/products.service';
 import { Product } from 'src/typeorm/entities/product.entity';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Review } from 'src/typeorm/entities/review.entity';
 import { ApiSecurity, ApiTags, ApiOperation, ApiBody } from '@nestjs/swagger';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @ApiTags('Products')
 @Controller('products')
+@UseInterceptors(CacheInterceptor)
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
