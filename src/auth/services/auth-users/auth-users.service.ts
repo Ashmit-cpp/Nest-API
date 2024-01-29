@@ -20,9 +20,9 @@ export class AuthUsersService {
   ) {}
 
   async loginUser(signDto: SignDto): Promise<any> {
-    const { username, password } = signDto;
+    const { email, password } = signDto;
 
-    const user = await this.userRepository.findOne({ where: { username } });
+    const user = await this.userRepository.findOne({ where: { email } });
 
     if (!user) {
       throw new NotFoundException('User not found');
@@ -31,7 +31,7 @@ export class AuthUsersService {
     const passwordMatch = await bcrypt.compare(password, user.password);
 
     if (passwordMatch) {
-      const payload = { sub: user.id, username: user.username };
+      const payload = { sub: user.id, email: user.email };
       const accessToken = this.jwtService.sign(payload);
 
       return { accessToken };
@@ -40,9 +40,9 @@ export class AuthUsersService {
     }
   }
 
-  async validateUser(username: string): Promise<User | null> {
+  async validateUser(email: string): Promise<User | null> {
     try {
-      const user = await this.userRepository.findOne({ where: { username } });
+      const user = await this.userRepository.findOne({ where: { email } });
       return user || null;
     } catch (error) {
       return null;

@@ -36,12 +36,14 @@ export class ProductsController {
   ): Promise<Product[]> {
     return this.productsService.findAll({ page, limit, name });
   }
+
   @Get(':id')
   @UseInterceptors(CacheInterceptor)
   @ApiOperation({ summary: 'Retrieve product by id' })
   findOne(@Param('id') id: number): Promise<Product | undefined> {
     return this.productsService.findOne(id);
   }
+
   @ApiSecurity('JWT-auth')
   @UseGuards(JwtAuthGuard)
   @Post('/create')
