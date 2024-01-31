@@ -19,10 +19,10 @@ export class CartService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
   ) {}
-  async getCartByUserName(userName: string): Promise<Cart> {
+  async getCartByemail(email: string): Promise<Cart> {
     try {
       const existingCart = await this.cartRepository.findOne({
-        where: { user: { username: userName } },
+        where: { user: { email: email } },
         relations: ['items', 'items.product'],
       });
       console.log('Existing Cart:', existingCart);
@@ -32,11 +32,11 @@ export class CartService {
 
       // If cart doesn't exist, create a new one
       const user = await this.userRepository.findOne({
-        where: { username: userName },
+        where: { email: email },
       });
       console.log('User:', user);
       if (!user) {
-        throw new NotFoundException(`User with username ${userName} not found`);
+        throw new NotFoundException(`User with email ${email} not found`);
       }
 
       const newCart = this.cartRepository.create({
@@ -46,22 +46,22 @@ export class CartService {
 
       return await this.cartRepository.save(newCart);
     } catch (error) {
-      console.error('Error in getCartByUserName:', error);
+      console.error('Error in getCartByemail:', error);
       if (error instanceof NotFoundException) {
         throw error; // Re-throw NotFoundException directly
       }
 
-      throw new NotFoundException(`Cart username ${userName} not found`);
+      throw new NotFoundException(`Cart email ${email} not found`);
     }
   }
 
   async addToCart(
-    userName: string,
+    email: string,
     productId: number,
     quantity: number,
   ): Promise<Cart> {
     try {
-      const cart = await this.getCartByUserName(userName);
+      const cart = await this.getCartByemail(email);
       const product = await this.productRepository.findOne({
         where: { id: productId },
       });
@@ -94,13 +94,13 @@ export class CartService {
         throw error;
       }
 
-      throw new NotFoundException(`User with username ${userName} not found`);
+      throw new NotFoundException(`User with email ${email} not found`);
     }
   }
 
-  async deleteFromCart(userName: string, productId: number): Promise<Cart> {
+  async deleteFromCart(email: string, productId: number): Promise<Cart> {
     try {
-      const cart = await this.getCartByUserName(userName);
+      const cart = await this.getCartByemail(email);
 
       const index = cart.items.findIndex(
         (item) => item.product.id == productId,
@@ -122,7 +122,7 @@ export class CartService {
         throw error; // Re-throw NotFoundException directly
       }
 
-      throw new NotFoundException(`User with username ${userName} not found`);
+      throw new NotFoundException(`User with email ${email} not found`);
     }
   }
 }

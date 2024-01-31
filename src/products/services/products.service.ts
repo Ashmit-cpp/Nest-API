@@ -17,8 +17,8 @@ export class ProductsService {
     private readonly reviewRepository: Repository<Review>,
   ) {}
 
-  async findAll({ page, limit, name }): Promise<Product[]> {
-    const cacheKey = `products:${name || 'all'}:${page}:${limit}`;
+  async findAll({ page, limit, searchTerm }): Promise<Product[]> {
+    const cacheKey = `products:${searchTerm || 'all'}:${page}:${limit}`;
     console.log('returning cached data', cacheKey);
     const cachedData = await this.cacheManager.get<Product[]>(cacheKey);
 
@@ -35,8 +35,8 @@ export class ProductsService {
       .skip(skip)
       .orderBy('product.id', 'DESC');
 
-    if (name) {
-      queryBuilder.where('product.name LIKE :name', { name: `%${name}%` });
+    if (searchTerm) {
+      queryBuilder.where('product.name LIKE :name', { name: `%${searchTerm}%` });
     }
 
     const products = await queryBuilder.getMany();

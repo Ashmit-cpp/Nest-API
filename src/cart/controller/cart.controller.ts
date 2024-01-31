@@ -29,7 +29,7 @@ export class CartController {
     type: Cart,
   })
   async getCart(@Request() req): Promise<Cart> {
-    return this.cartService.getCartByUserName(req.user.username);
+    return this.cartService.getCartByemail(req.user.username);
   }
 
   @ApiSecurity('JWT-auth')
@@ -50,6 +50,8 @@ export class CartController {
     @Param('productId') productId: number,
     @Body('quantity') quantity: number,
   ): Promise<Cart> {
+    console.log(req.user.username);
+
     return this.cartService.addToCart(req.user.username, productId, quantity);
   }
 

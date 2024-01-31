@@ -39,11 +39,7 @@ export class WishlistController {
     type: Wishlist,
   })
   async getWishlist(@Request() req): Promise<Wishlist> {
-    console.log(req.user.username);
-    console.log('Generated Cache Key:', 'custom_key');
-    // await this.cacheManager.add('key');*
-
-    return this.wishlistService.getWishlistByUserName(req.user.username);
+    return this.wishlistService.getWishlistByEmail(req.user.username);
   }
 
   @ApiSecurity('JWT-auth')
@@ -59,7 +55,7 @@ export class WishlistController {
     @Request() req,
     @Param('productId') productId: number,
   ): Promise<Wishlist> {
-    console.log(req.user.username);
+    // console.log(req.user.username);
     return this.wishlistService.addToWishlist(req.user.username, productId);
   }
 

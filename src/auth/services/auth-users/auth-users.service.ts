@@ -25,7 +25,10 @@ export class AuthUsersService {
     const user = await this.userRepository.findOne({ where: { email } });
 
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException({
+        statusCode: 404,
+        message: 'User not found',
+      });
     }
 
     const passwordMatch = await bcrypt.compare(password, user.password);
@@ -34,9 +37,12 @@ export class AuthUsersService {
       const payload = { sub: user.id, email: user.email };
       const accessToken = this.jwtService.sign(payload);
 
-      return { accessToken };
+      return { statusCode: 200, message: 'Login successful', accessToken };
     } else {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException({
+        statusCode: 401,
+        message: 'Invalid credentials',
+      });
     }
   }
 
