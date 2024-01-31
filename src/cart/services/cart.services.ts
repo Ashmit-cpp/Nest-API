@@ -69,14 +69,14 @@ export class CartService {
       if (!product) {
         throw new NotFoundException(`Product with ID ${productId} not found`);
       }
-
+      console.log();
       const existingCartItem = cart.items.find(
-        (item) => item.product.id === productId,
+        (item) => item.product.id === +productId,
       );
       console.log('Existing Cart Item:', existingCartItem);
 
       if (existingCartItem) {
-        existingCartItem.quantity += quantity;
+        existingCartItem.quantity += +quantity;
       } else {
         const newCartItem = this.cartItemRepository.create({
           cart: cart,
