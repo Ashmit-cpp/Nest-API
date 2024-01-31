@@ -49,10 +49,11 @@ export class CartController {
     @Request() req,
     @Param('productId') productId: number,
     @Body('quantity') quantity: number,
+    @Body('totalPrice') totalPrice: number,
   ): Promise<Cart> {
     console.log(req.user.username);
 
-    return this.cartService.addToCart(req.user.username, productId, quantity);
+    return this.cartService.addToCart(req.user.username, productId, quantity, totalPrice);
   }
 
   @ApiSecurity('JWT-auth')
@@ -92,5 +93,24 @@ export class CartController {
     @Param('productId') productId: number,
   ): Promise<Cart> {
     return this.cartService.reduceQuantity(req.user.username, productId);
+  }
+  @ApiSecurity('JWT-auth')
+  @UseGuards(JwtAuthGuard)
+  @Post('increase/:productId')
+  @ApiParam({
+    name: 'productId',
+    description: 'The ID of the product to increase in the cart',
+    type: 'number',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns the updated cart after adding one product',
+    type: Cart,
+  })
+  async AddOneFromCart(
+    @Request() req,
+    @Param('productId') productId: number,
+  ): Promise<Cart> {
+    return this.cartService.increaseQuantity(req.user.username, productId);
   }
 }

@@ -25,7 +25,7 @@ export class CartService {
         where: { user: { email: email } },
         relations: ['items', 'items.product'],
       });
-      console.log('Existing Cart:', existingCart);
+      // console.log('Existing Cart:', existingCart);
       if (existingCart) {
         return existingCart;
       }
@@ -59,29 +59,31 @@ export class CartService {
     email: string,
     productId: number,
     quantity: number,
+    totalPrice: number,
   ): Promise<Cart> {
     try {
       const cart = await this.getCartByemail(email);
       const product = await this.productRepository.findOne({
         where: { id: productId },
       });
-      console.log('Product:', product);
+      // console.log('Product:', product);
       if (!product) {
         throw new NotFoundException(`Product with ID ${productId} not found`);
       }
-      console.log();
       const existingCartItem = cart.items.find(
         (item) => item.product.id === +productId,
       );
-      console.log('Existing Cart Item:', existingCartItem);
+      // console.log('Existing Cart Item:', existingCartItem);
 
       if (existingCartItem) {
         existingCartItem.quantity += +quantity;
+        existingCartItem.totalPrice += +totalPrice;
       } else {
         const newCartItem = this.cartItemRepository.create({
           cart: cart,
           product: product,
           quantity: quantity,
+          totalPrice: totalPrice,
         });
         console.log('New Cart Item:', newCartItem);
         cart.items.push(newCartItem);
@@ -129,7 +131,7 @@ export class CartService {
   async reduceQuantity(email: string, productId: number): Promise<Cart> {
     try {
       const cart = await this.getCartByemail(email);
-      console.log(cart)
+      console.log(cart);
       const existingCartItem = cart.items.find(
         (item) => item.product.id === +productId,
       );
@@ -138,6 +140,8 @@ export class CartService {
         // Reduce the quantity by 1
         if (existingCartItem.quantity > 1) {
           existingCartItem.quantity -= 1;
+          existingCartItem.totalPrice =
+            existingCartItem.quantity * existingCartItem.product.price;
         } else {
           // If quantity is already 1, remove the item from the cart
           const index = cart.items.indexOf(existingCartItem);
@@ -152,6 +156,35 @@ export class CartService {
       return await this.cartRepository.save(cart);
     } catch (error) {
       console.error('Error in reduceQuantity:', error);
+      if (error instanceof NotFoundException) {
+        throw error; // Re-throw NotFoundException directly
+      }
+
+      throw new NotFoundException(`User with email ${email} not found`);
+    }
+  }
+
+  async increaseQuantity(email: string, productId: number): Promise<Cart> {
+    try {
+      const cart = await this.getCartByemail(email);
+
+      const existingCartItem = cart.items.find(
+        (item) => item.product.id === +productId,
+      );
+
+      if (existingCartItem) {
+        existingCartItem.quantity += 1;
+        existingCartItem.totalPrice =
+          existingCartItem.quantity * existingCartItem.product.price;
+      } else {
+        throw new NotFoundException(
+          `Item with product ID ${productId} not found in the cart`,
+        );
+      }
+
+      return await this.cartRepository.save(cart);
+    } catch (error) {
+      console.error('Error in increaseQuantity:', error);
       if (error instanceof NotFoundException) {
         throw error; // Re-throw NotFoundException directly
       }
