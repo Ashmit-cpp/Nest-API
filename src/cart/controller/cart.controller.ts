@@ -68,10 +68,29 @@ export class CartController {
     description: 'Returns the updated cart after deleting the product',
     type: Cart,
   })
-  async deleteFromCart(
+  async deleteAllFromCart(
     @Request() req,
     @Param('productId') productId: number,
   ): Promise<Cart> {
-    return this.cartService.deleteFromCart(req.user.username, productId);
+    return this.cartService.deleteAllFromCart(req.user.username, productId);
+  }
+  @ApiSecurity('JWT-auth')
+  @UseGuards(JwtAuthGuard)
+  @Delete('reduce/:productId')
+  @ApiParam({
+    name: 'productId',
+    description: 'The ID of the product to deletes only one from the cart',
+    type: 'number',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns the updated cart after deleting only one product',
+    type: Cart,
+  })
+  async deleteOneFromCart(
+    @Request() req,
+    @Param('productId') productId: number,
+  ): Promise<Cart> {
+    return this.cartService.reduceQuantity(req.user.username, productId);
   }
 }

@@ -98,7 +98,7 @@ export class CartService {
     }
   }
 
-  async deleteFromCart(email: string, productId: number): Promise<Cart> {
+  async deleteAllFromCart(email: string, productId: number): Promise<Cart> {
     try {
       const cart = await this.getCartByemail(email);
 
@@ -118,6 +118,40 @@ export class CartService {
       return await this.cartRepository.save(cart);
     } catch (error) {
       console.error('Error in deleteFromCart:', error);
+      if (error instanceof NotFoundException) {
+        throw error; // Re-throw NotFoundException directly
+      }
+
+      throw new NotFoundException(`User with email ${email} not found`);
+    }
+  }
+
+  async reduceQuantity(email: string, productId: number): Promise<Cart> {
+    try {
+      const cart = await this.getCartByemail(email);
+      console.log(cart)
+      const existingCartItem = cart.items.find(
+        (item) => item.product.id === +productId,
+      );
+
+      if (existingCartItem) {
+        // Reduce the quantity by 1
+        if (existingCartItem.quantity > 1) {
+          existingCartItem.quantity -= 1;
+        } else {
+          // If quantity is already 1, remove the item from the cart
+          const index = cart.items.indexOf(existingCartItem);
+          cart.items.splice(index, 1);
+        }
+      } else {
+        throw new NotFoundException(
+          `Item with product ID ${productId} not found in the cart`,
+        );
+      }
+
+      return await this.cartRepository.save(cart);
+    } catch (error) {
+      console.error('Error in reduceQuantity:', error);
       if (error instanceof NotFoundException) {
         throw error; // Re-throw NotFoundException directly
       }
