@@ -31,17 +31,15 @@ export class ProductsController {
   @ApiOperation({ summary: 'Retrieve a list of products' })
   async findAll(
     @Query('page') page: number = 1,
-    @Query('limit') limit: number = 10,
+    @Query('limit') limit: number = 0,
     @Query('searchTerm') searchTerm: string,
   ): Promise<Product[]> {
     return this.productsService.findAll({ page, limit, searchTerm });
   }
-
-  @Get(':id')
-  @UseInterceptors(CacheInterceptor)
-  @ApiOperation({ summary: 'Retrieve product by id' })
-  findOne(@Param('id') id: number): Promise<Product | undefined> {
-    return this.productsService.findOne(id);
+  @UseGuards(JwtAuthGuard)
+  @Get('/productby')
+  async findByCreate(@Request() req): Promise<Product[] | undefined> {
+    return this.productsService.findByCreate(req.user.username);
   }
 
   @ApiSecurity('JWT-auth')
@@ -88,6 +86,11 @@ export class ProductsController {
 
     await this.productsService.deleteReviews(product);
     await this.productsService.remove(id);
+  }
+  @Get(':id')
+  @ApiOperation({ summary: 'Retrieve product by id' })
+  findOne(@Param('id') id: number): Promise<Product | undefined> {
+    return this.productsService.findOne(id);
   }
 
   @ApiBody({

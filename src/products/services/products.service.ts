@@ -36,7 +36,9 @@ export class ProductsService {
       .orderBy('product.id', 'DESC');
 
     if (searchTerm) {
-      queryBuilder.where('product.name LIKE :name', { name: `%${searchTerm}%` });
+      queryBuilder.where('product.name LIKE :name', {
+        name: `%${searchTerm}%`,
+      });
     }
 
     const products = await queryBuilder.getMany();
@@ -46,10 +48,15 @@ export class ProductsService {
   }
 
   async findOne(id: number): Promise<Product | undefined> {
-    console.log('fetching');
     return this.productRepository.findOne({
       // select: []
       where: { id },
+      relations: ['reviews'],
+    });
+  }
+  async findByCreate(createdBy: string): Promise<Product[] | undefined> {
+    return this.productRepository.find({
+      where: { createdBy },
       relations: ['reviews'],
     });
   }
