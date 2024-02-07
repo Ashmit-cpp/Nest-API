@@ -1,5 +1,4 @@
 // src/controllers/cart.controller.ts
-// src/cart/cart.controller.ts
 import {
   Controller,
   Get,
@@ -29,7 +28,7 @@ export class CartController {
     type: Cart,
   })
   async getCart(@Request() req): Promise<Cart> {
-    return this.cartService.getCartByemail(req.user.username);
+    return this.cartService.getCartByuserId(req.user.userId);
   }
 
   @ApiSecurity('JWT-auth')
@@ -51,9 +50,14 @@ export class CartController {
     @Body('quantity') quantity: number,
     @Body('totalPrice') totalPrice: number,
   ): Promise<Cart> {
-    console.log(req.user.username);
+    console.log(req.user.userId);
 
-    return this.cartService.addToCart(req.user.username, productId, quantity, totalPrice);
+    return this.cartService.addToCart(
+      req.user.userId,
+      productId,
+      quantity,
+      totalPrice,
+    );
   }
 
   @ApiSecurity('JWT-auth')
@@ -73,7 +77,7 @@ export class CartController {
     @Request() req,
     @Param('productId') productId: number,
   ): Promise<Cart> {
-    return this.cartService.deleteAllFromCart(req.user.username, productId);
+    return this.cartService.deleteAllFromCart(req.user.userId, productId);
   }
   @ApiSecurity('JWT-auth')
   @UseGuards(JwtAuthGuard)
@@ -92,7 +96,7 @@ export class CartController {
     @Request() req,
     @Param('productId') productId: number,
   ): Promise<Cart> {
-    return this.cartService.reduceQuantity(req.user.username, productId);
+    return this.cartService.reduceQuantity(req.user.userId, productId);
   }
   @ApiSecurity('JWT-auth')
   @UseGuards(JwtAuthGuard)
@@ -111,6 +115,6 @@ export class CartController {
     @Request() req,
     @Param('productId') productId: number,
   ): Promise<Cart> {
-    return this.cartService.increaseQuantity(req.user.username, productId);
+    return this.cartService.increaseQuantity(req.user.userId, productId);
   }
 }

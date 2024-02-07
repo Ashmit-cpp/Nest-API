@@ -49,6 +49,7 @@ export class AuthUsersService {
   async validateUser(email: string): Promise<User | null> {
     try {
       const user = await this.userRepository.findOne({ where: { email } });
+      // console.log(user);
       return user || null;
     } catch (error) {
       return null;

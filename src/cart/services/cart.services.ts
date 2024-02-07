@@ -19,10 +19,10 @@ export class CartService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
   ) {}
-  async getCartByemail(email: string): Promise<Cart> {
+  async getCartByuserId(UserID: number): Promise<Cart> {
     try {
       const existingCart = await this.cartRepository.findOne({
-        where: { user: { email: email } },
+        where: { user: { id: UserID } },
         relations: ['items', 'items.product'],
       });
       // console.log('Existing Cart:', existingCart);
@@ -32,11 +32,11 @@ export class CartService {
 
       // If cart doesn't exist, create a new one
       const user = await this.userRepository.findOne({
-        where: { email: email },
+        where: { id: UserID },
       });
       console.log('User:', user);
       if (!user) {
-        throw new NotFoundException(`User with email ${email} not found`);
+        throw new NotFoundException(`User with user id ${UserID} not found`);
       }
 
       const newCart = this.cartRepository.create({
@@ -46,23 +46,23 @@ export class CartService {
 
       return await this.cartRepository.save(newCart);
     } catch (error) {
-      console.error('Error in getCartByemail:', error);
+      console.error('Error in getCartByuserId:', error);
       if (error instanceof NotFoundException) {
         throw error; // Re-throw NotFoundException directly
       }
 
-      throw new NotFoundException(`Cart email ${email} not found`);
+      throw new NotFoundException(`Cart user id ${UserID} not found`);
     }
   }
 
   async addToCart(
-    email: string,
+    UserId: number,
     productId: number,
     quantity: number,
     totalPrice: number,
   ): Promise<Cart> {
     try {
-      const cart = await this.getCartByemail(email);
+      const cart = await this.getCartByuserId(UserId);
       const product = await this.productRepository.findOne({
         where: { id: productId },
       });
@@ -96,13 +96,13 @@ export class CartService {
         throw error;
       }
 
-      throw new NotFoundException(`User with email ${email} not found`);
+      throw new NotFoundException(`User with user id ${UserId} not found`);
     }
   }
 
-  async deleteAllFromCart(email: string, productId: number): Promise<Cart> {
+  async deleteAllFromCart(UserId: number, productId: number): Promise<Cart> {
     try {
-      const cart = await this.getCartByemail(email);
+      const cart = await this.getCartByuserId(UserId);
 
       const index = cart.items.findIndex(
         (item) => item.product.id == productId,
@@ -124,13 +124,13 @@ export class CartService {
         throw error; // Re-throw NotFoundException directly
       }
 
-      throw new NotFoundException(`User with email ${email} not found`);
+      throw new NotFoundException(`User with user id ${UserId} not found`);
     }
   }
 
-  async reduceQuantity(email: string, productId: number): Promise<Cart> {
+  async reduceQuantity(UserId: number, productId: number): Promise<Cart> {
     try {
-      const cart = await this.getCartByemail(email);
+      const cart = await this.getCartByuserId(UserId);
       console.log(cart);
       const existingCartItem = cart.items.find(
         (item) => item.product.id === +productId,
@@ -160,13 +160,13 @@ export class CartService {
         throw error; // Re-throw NotFoundException directly
       }
 
-      throw new NotFoundException(`User with email ${email} not found`);
+      throw new NotFoundException(`User with user id ${UserId} not found`);
     }
   }
 
-  async increaseQuantity(email: string, productId: number): Promise<Cart> {
+  async increaseQuantity(UserId: number, productId: number): Promise<Cart> {
     try {
-      const cart = await this.getCartByemail(email);
+      const cart = await this.getCartByuserId(UserId);
 
       const existingCartItem = cart.items.find(
         (item) => item.product.id === +productId,
@@ -189,7 +189,7 @@ export class CartService {
         throw error; // Re-throw NotFoundException directly
       }
 
-      throw new NotFoundException(`User with email ${email} not found`);
+      throw new NotFoundException(`User with user id ${UserId} not found`);
     }
   }
 }

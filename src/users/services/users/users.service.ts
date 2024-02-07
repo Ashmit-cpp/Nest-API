@@ -12,11 +12,22 @@ export class UsersService {
   ) {}
 
   async findUser(username: string): Promise<any> {
+    console.log(username);
     const user = await this.userRepository.findBy({ username });
 
     if (!user || user.length === 0) {
       throw new NotFoundException('User not found');
     }
+
+    return user;
+  }
+  async findUseremail(email: string): Promise<any> {
+    // console.log(email);
+    const user = await this.userRepository.findOneBy({ email });
+
+    // if (!user || user.length === 0) {
+    //   throw new NotFoundException('User not found');
+    // }
 
     return user;
   }
@@ -40,7 +51,7 @@ export class UsersService {
     return this.userRepository.save(newUser);
   }
 
-  updateUser(id: number, updateUserDetails: UpdateUserParams) {
+  updateUser(id: number, updateUserDetails: { username: string; email: string }) {
     return this.userRepository.update({ id }, { ...updateUserDetails });
   }
   deleteUser(id: number) {

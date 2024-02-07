@@ -28,6 +28,7 @@ import {
 @ApiTags('User')
 export class UsersController {
   constructor(private userService: UsersService) {}
+
   //READ
   @Get(':username')
   @ApiParam({
@@ -40,19 +41,36 @@ export class UsersController {
   })
   async getUsers(@Param('username') username: string) {
     const users = await this.userService.findUser(username);
+    // console.log(users);
+    return users;
+  }
+
+  @Get('email/:email')
+  @ApiParam({
+    name: 'email',
+    description: 'The email of the user to retrieve',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns the user with the specified email',
+  })
+  async getUsersemail(@Param('email') email: string) {
+    const users = await this.userService.findUseremail(email);
     console.log(users);
     return users;
   }
+
   //CREATE
   @Post('/register')
   @ApiResponse({
     status: 201,
     description: 'Registers a new user',
-    type: createUserDto, 
+    type: createUserDto,
   })
   createUser(@Body() CreateUserDto: createUserDto) {
     return this.userService.createUser(CreateUserDto);
   }
+
   //LOGIN
   @Post('/login')
   async loginUser(@Body() loginUserDto: createUserDto) {
@@ -71,9 +89,8 @@ export class UsersController {
   }
 
   //UPDATE
-  @ApiSecurity('JWT-auth')
   @UseGuards(JwtAuthGuard)
-  @Patch(':id')
+  @Put(':id')
   @ApiParam({ name: 'id', type: 'number' })
   @ApiResponse({
     status: 204,
@@ -81,10 +98,11 @@ export class UsersController {
   })
   async updateUserById(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updateUserDto: UpdateUserDto,
+    @Body() userData: { username: string; email: string },
   ) {
-    await this.userService.updateUser(id, updateUserDto);
+    await this.userService.updateUser(id, userData);
   }
+
   //DELETE
   @ApiSecurity('JWT-auth')
   @UseGuards(JwtAuthGuard)

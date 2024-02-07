@@ -45,11 +45,11 @@ export class Product {
   categories: Category[];
 
   @OneToMany(() => Review, (review) => review.product, { cascade: true })
-  reviews: Review[]; 
+  reviews: Review[];
 
   @OneToMany(() => CartItem, (cartItem) => cartItem.product)
   cartItems: CartItem[];
 
   @Column({ nullable: true })
-  createdBy: string;
+  createdById: number;
 }

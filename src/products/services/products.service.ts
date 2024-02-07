@@ -43,7 +43,7 @@ export class ProductsService {
 
     const products = await queryBuilder.getMany();
     // Cache the fetched data for future use
-    await this.cacheManager.set(cacheKey, products);
+    await this.cacheManager.set(cacheKey, products, 10);
     return products;
   }
 
@@ -54,9 +54,9 @@ export class ProductsService {
       relations: ['reviews'],
     });
   }
-  async findByCreate(createdBy: string): Promise<Product[] | undefined> {
+  async findByCreateId(createdById: number): Promise<Product[] | undefined> {
     return this.productRepository.find({
-      where: { createdBy },
+      where: { createdById },
       relations: ['reviews'],
     });
   }

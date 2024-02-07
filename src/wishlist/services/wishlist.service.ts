@@ -14,10 +14,10 @@ export class WishlistService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async getWishlistByEmail(Email: string): Promise<Wishlist> {
+  async getWishlistById(UserId: number): Promise<Wishlist> {
     try {
       const existingWishlist = await this.wishlistRepository.findOne({
-        where: { user: { email: Email } },
+        where: { user: { id: UserId } },
         relations: ['products', 'user'],
       });
 
@@ -27,11 +27,11 @@ export class WishlistService {
 
       // If wishlist doesn't exist, create a new one
       const user = await this.userRepository.findOne({
-        where: { email: Email },
+        where: { id: UserId },
       });
 
       if (!user) {
-        throw new NotFoundException(`User with username ${Email} not found`);
+        throw new NotFoundException(`User with user id: ${UserId} not found`);
       }
 
       const newWishlist = this.wishlistRepository.create({
@@ -46,17 +46,17 @@ export class WishlistService {
       }
 
       throw new NotFoundException(
-        `Wishlist for user with username ${Email} not found`,
+        `Wishlist for user with user id ${UserId} not found`,
       );
     }
   }
 
   async removeFromWishlist(
-    Email: string,
+    UserId: number,
     productId: number,
   ): Promise<Wishlist> {
     try {
-      const wishlist = await this.getWishlistByEmail(Email);
+      const wishlist = await this.getWishlistById(UserId);
 
       const updatedProducts = wishlist.products.reduce((acc, product) => {
         if (product.id == productId) {
@@ -73,17 +73,17 @@ export class WishlistService {
       if (error instanceof NotFoundException) {
         throw error;
       }
-      throw new NotFoundException(`User with username ${Email} not found`);
+      throw new NotFoundException(`User with username ${UserId} not found`);
     }
   }
 
-  async addToWishlist(Email: string, productId: number): Promise<Wishlist> {
+  async addToWishlist(UserId: number, productId: number): Promise<Wishlist> {
     try {
-      const wishlist = await this.getWishlistByEmail(Email);
+      const wishlist = await this.getWishlistById(UserId);
       wishlist.products.push({ id: productId } as any);
       return await this.wishlistRepository.save(wishlist);
     } catch (error) {
-      throw new NotFoundException(`User with ID ${Email} not found`);
+      throw new NotFoundException(`User with ID ${UserId} not found`);
     }
   }
 }

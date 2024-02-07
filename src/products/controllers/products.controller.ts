@@ -36,10 +36,11 @@ export class ProductsController {
   ): Promise<Product[]> {
     return this.productsService.findAll({ page, limit, searchTerm });
   }
+
   @UseGuards(JwtAuthGuard)
   @Get('/productby')
-  async findByCreate(@Request() req): Promise<Product[] | undefined> {
-    return this.productsService.findByCreate(req.user.username);
+  async findByCreateId(@Request() req): Promise<Product[] | undefined> {
+    return this.productsService.findByCreateId(req.user.userId);
   }
 
   @ApiSecurity('JWT-auth')
@@ -50,8 +51,8 @@ export class ProductsController {
     @Body() productData: Partial<Product>,
     @Request() req,
   ): Promise<Product> {
-    const createdBy = req.user.username;
-    productData.createdBy = createdBy;
+    const createdById = req.user.userId;
+    productData.createdById = createdById;
     productData.reviews = [];
     return this.productsService.create(productData);
   }
@@ -78,7 +79,7 @@ export class ProductsController {
       throw new NotFoundException(`Product with id ${id} not found`);
     }
 
-    if (product.createdBy !== req.user.username) {
+    if (product.createdById !== req.user.userId) {
       throw new UnauthorizedException(
         'You are not authorized to delete this product',
       );
@@ -87,6 +88,7 @@ export class ProductsController {
     await this.productsService.deleteReviews(product);
     await this.productsService.remove(id);
   }
+
   @Get(':id')
   @ApiOperation({ summary: 'Retrieve product by id' })
   findOne(@Param('id') id: number): Promise<Product | undefined> {

@@ -16,7 +16,6 @@ import { WishlistModule } from './wishlist/wishlist.module';
 import { CartModule } from './cart/cart.module';
 import { Review } from './typeorm/entities/review.entity';
 // import { ReportingModule } from './reporting/reporting.module';
-// import { RedisOptions } from './utils/dtos/app-options.constants';
 import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({

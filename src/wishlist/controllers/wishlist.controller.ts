@@ -39,7 +39,7 @@ export class WishlistController {
     type: Wishlist,
   })
   async getWishlist(@Request() req): Promise<Wishlist> {
-    return this.wishlistService.getWishlistByEmail(req.user.username);
+    return this.wishlistService.getWishlistById(req.user.userId);
   }
 
   @ApiSecurity('JWT-auth')
@@ -55,8 +55,7 @@ export class WishlistController {
     @Request() req,
     @Param('productId') productId: number,
   ): Promise<Wishlist> {
-    // console.log(req.user.username);
-    return this.wishlistService.addToWishlist(req.user.username, productId);
+    return this.wishlistService.addToWishlist(req.user.userId, productId);
   }
 
   @ApiSecurity('JWT-auth')
@@ -72,11 +71,8 @@ export class WishlistController {
     @Request() req,
     @Param('productId') productId: number,
   ): Promise<Wishlist> {
-    console.log(req.user.username);
+    console.log(req.user.userId);
 
-    return this.wishlistService.removeFromWishlist(
-      req.user.username,
-      productId,
-    );
+    return this.wishlistService.removeFromWishlist(req.user.userId, productId);
   }
 }
