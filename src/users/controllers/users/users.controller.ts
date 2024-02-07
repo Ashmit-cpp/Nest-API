@@ -45,17 +45,17 @@ export class UsersController {
     return users;
   }
 
-  @Get('email/:email')
+  @Get('/findByUserId/:userid')
   @ApiParam({
-    name: 'email',
-    description: 'The email of the user to retrieve',
+    name: 'userid',
+    description: 'The userid of the user to retrieve',
   })
   @ApiResponse({
     status: 200,
-    description: 'Returns the user with the specified email',
+    description: 'Returns the user with the specified userid',
   })
-  async getUsersemail(@Param('email') email: string) {
-    const users = await this.userService.findUseremail(email);
+  async findByUserId(@Param('userid') userId: number) {
+    const users = await this.userService.findByUserId(userId);
     console.log(users);
     return users;
   }

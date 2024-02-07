@@ -21,19 +21,18 @@ export class UsersService {
 
     return user;
   }
-  async findUseremail(email: string): Promise<any> {
-    // console.log(email);
-    const user = await this.userRepository.findOneBy({ email });
-
-    // if (!user || user.length === 0) {
-    //   throw new NotFoundException('User not found');
-    // }
+  async findByUserId(id: number): Promise<any> {
+    console.log(id);
+    const user = await this.userRepository.findOne({ where: { id } });
+    console.log(user);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
 
     return user;
   }
 
   async createUser(userDetails: CreateUserParams) {
-    // Check if user already exists by email or username
     const existingUser = await this.userRepository.findOne({
       where: [{ email: userDetails.email }, { username: userDetails.username }],
     });
@@ -51,7 +50,10 @@ export class UsersService {
     return this.userRepository.save(newUser);
   }
 
-  updateUser(id: number, updateUserDetails: { username: string; email: string }) {
+  updateUser(
+    id: number,
+    updateUserDetails: { username: string; email: string },
+  ) {
     return this.userRepository.update({ id }, { ...updateUserDetails });
   }
   deleteUser(id: number) {

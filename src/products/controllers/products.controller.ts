@@ -33,8 +33,16 @@ export class ProductsController {
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 0,
     @Query('searchTerm') searchTerm: string,
+    @Query('sortBy') sortBy: string,
+    @Query('sortOrder') sortOrder: string,
   ): Promise<Product[]> {
-    return this.productsService.findAll({ page, limit, searchTerm });
+    return this.productsService.findAll({
+      page,
+      limit,
+      searchTerm,
+      sortBy,
+      sortOrder,
+    });
   }
 
   @UseGuards(JwtAuthGuard)
@@ -106,14 +114,36 @@ export class ProductsController {
   async addReview(
     @Param('id') id: string,
     @Body() reviewData: { text: string; rating: number },
+    @Request() req,
   ): Promise<Review | undefined> {
     const product = await this.productsService.findOne(+id);
-
     if (!product) {
       throw new NotFoundException(`Product with id ${id} not found`);
     }
-    const check = await this.productsService.addReview(product, reviewData);
+    const check = await this.productsService.addReview(
+      product,
+      reviewData,
+      req.user.userId,
+    );
     console.log(check);
     return check;
+  }
+
+  @ApiBody({
+    type: Review,
+    description: 'Delete Review',
+  })
+  @ApiSecurity('JWT-auth')
+  @UseGuards(JwtAuthGuard)
+  @Delete('/deletereview/:id')
+  async deleteReviews(@Param('id') id: number): Promise<void> {
+    const product: Product = await this.productsService.findOne(id);
+
+    if (!product) {
+      // Handle product not found
+      return;
+    }
+    await this.productsService.deleteReviews(product);
+
   }
 }

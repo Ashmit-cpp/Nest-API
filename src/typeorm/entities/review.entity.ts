@@ -1,14 +1,9 @@
 // src/entities/review.entity.ts
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import {
-  IsNotEmpty,
-  IsNumber,
-  Min,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsNotEmpty, IsNumber, Min } from 'class-validator';
 import { Product } from './product.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { User } from './user.entity';
 
 @Entity()
 export class Review {
@@ -26,4 +21,6 @@ export class Review {
 
   @ManyToOne(() => Product, (product) => product.reviews)
   product: Product;
+  @Column()
+  createdbyUserId: number;
 }

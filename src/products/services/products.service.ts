@@ -6,6 +6,7 @@ import { Review } from 'src/typeorm/entities/review.entity';
 import { Repository } from 'typeorm';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
+import { User } from 'src/typeorm/entities/user.entity';
 
 @Injectable()
 export class ProductsService {
@@ -17,8 +18,14 @@ export class ProductsService {
     private readonly reviewRepository: Repository<Review>,
   ) {}
 
-  async findAll({ page, limit, searchTerm }): Promise<Product[]> {
-    const cacheKey = `products:${searchTerm || 'all'}:${page}:${limit}`;
+  async findAll({
+    page,
+    limit,
+    searchTerm,
+    sortBy,
+    sortOrder,
+  }): Promise<Product[]> {
+    const cacheKey = `products:${searchTerm || 'all'}:${page}:${limit}:${sortBy}:${sortOrder}`;
     console.log('returning cached data', cacheKey);
     const cachedData = await this.cacheManager.get<Product[]>(cacheKey);
 
@@ -32,13 +39,20 @@ export class ProductsService {
       .createQueryBuilder('product')
       .leftJoinAndSelect('product.reviews', 'reviews')
       .take(limit)
-      .skip(skip)
-      .orderBy('product.id', 'DESC');
+      .skip(skip);
 
     if (searchTerm) {
       queryBuilder.where('product.name LIKE :name', {
         name: `%${searchTerm}%`,
       });
+    }
+
+    // Apply sorting if sortBy and sortOrder are provided
+    if (sortBy && sortOrder) {
+      queryBuilder.orderBy(
+        `product.${sortBy}`,
+        sortOrder.toUpperCase() as 'ASC' | 'DESC',
+      );
     }
 
     const products = await queryBuilder.getMany();
@@ -83,11 +97,13 @@ export class ProductsService {
   async addReview(
     product: Product,
     reviewData: { text: string; rating: number },
+    UserId: number,
   ): Promise<Review> {
     const review = new Review();
     review.text = reviewData.text;
     review.rating = reviewData.rating;
     review.product = product;
+    review.createdbyUserId = UserId;
     await this.reviewRepository.save(review);
     return review;
   }

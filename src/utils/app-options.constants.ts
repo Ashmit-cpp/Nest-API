@@ -9,7 +9,7 @@ export const RedisOptions: CacheModuleAsyncOptions = {
         host: '127.0.0.1',
         port: 6379,
       },
-      ttl: 10,
+      ttl: 1000,
     });
     return {
       store: () => store,
