@@ -23,6 +23,7 @@ import {
   ApiTags,
   ApiOperation,
 } from '@nestjs/swagger';
+import { PasswordChangeDto } from 'src/utils/dtos/password-change.dto';
 
 @Controller('users')
 @ApiTags('User')
@@ -114,5 +115,14 @@ export class UsersController {
   })
   async deleteUserById(@Param('id', ParseIntPipe) id: number) {
     await this.userService.deleteUser(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('/change-password/:id')
+  async changePassword(
+    @Param('id') userId: number,
+    @Body() passwordChangeDto: PasswordChangeDto,
+  ): Promise<void> {
+    return this.userService.changePassword(userId, passwordChangeDto);
   }
 }

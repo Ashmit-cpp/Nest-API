@@ -4,6 +4,7 @@ import { User } from 'src/typeorm/entities/user.entity';
 import { CreateUserParams, UpdateUserParams } from 'src/utils/types';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { PasswordChangeDto } from 'src/utils/dtos/password-change.dto';
 
 @Injectable()
 export class UsersService {
@@ -22,7 +23,6 @@ export class UsersService {
     return user;
   }
   async findByUserId(id: number): Promise<any> {
-    console.log(id);
     const user = await this.userRepository.findOne({ where: { id } });
     console.log(user);
     if (!user) {
@@ -58,5 +58,31 @@ export class UsersService {
   }
   deleteUser(id: number) {
     return this.userRepository.delete({ id });
+  }
+
+  async changePassword(
+    userId: number,
+    passwordChangeDto: PasswordChangeDto,
+  ): Promise<void> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const isPasswordValid = await bcrypt.compare(
+      passwordChangeDto.currentPassword,
+      user.password,
+    );
+
+    if (!isPasswordValid) {
+      throw new NotFoundException('Current password is incorrect.');
+    }
+
+    const hashedPassword = await bcrypt.hash(passwordChangeDto.newPassword, 10);
+    user.password = hashedPassword;
+
+    await this.userRepository.save(user);
   }
 }
