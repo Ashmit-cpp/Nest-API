@@ -26,11 +26,11 @@ export class ProductsService {
     sortOrder,
   }): Promise<Product[]> {
     const cacheKey = `products:${searchTerm || 'all'}:${page}:${limit}:${sortBy}:${sortOrder}`;
-    console.log('returning cached data', cacheKey);
+    // console.log('returning cached data', cacheKey);
     const cachedData = await this.cacheManager.get<Product[]>(cacheKey);
 
     if (cachedData) {
-      console.log('returning cached data', cachedData);
+      // console.log('returning cached data', cachedData);
       return cachedData;
     }
     // If not, fetch the data from the database
