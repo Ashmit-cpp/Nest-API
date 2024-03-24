@@ -5,11 +5,16 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Load environment variables
+  const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:3000';
+  const PORT = process.env.PORT || 3000; 
+
   const options = new DocumentBuilder()
     .setTitle('EcommerceApp')
-    .setDescription('EcommerceApp API description')
+    .setDescription('Ecommerce App')
     .setVersion('1.0')
-    .addServer('http://localhost:3000/', 'Local environment')
+    .addServer(BACKEND_URL, 'Deployment environment')
     .addBearerAuth(
       {
         type: 'http',
@@ -27,6 +32,6 @@ async function bootstrap() {
   SwaggerModule.setup('api-docs', app, document);
   app.useGlobalPipes(new ValidationPipe());
   app.enableCors();
-  await app.listen(3000);
+  await app.listen(PORT);
 }
 bootstrap();
