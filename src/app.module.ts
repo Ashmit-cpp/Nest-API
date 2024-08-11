@@ -17,6 +17,7 @@ import { CartModule } from './cart/cart.module';
 import { Review } from './typeorm/entities/review.entity';
 // import { ReportingModule } from './reporting/reporting.module';
 import { CacheModule } from '@nestjs/cache-manager';
+import { StripeModule } from './stripe/stripe.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { CacheModule } from '@nestjs/cache-manager';
     ProductsModule,
     WishlistModule,
     CartModule,
+    StripeModule
   ],
   controllers: [AppController],
   providers: [AppService],

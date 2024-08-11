@@ -54,7 +54,45 @@ export class CartService {
       throw new NotFoundException(`Cart user id ${UserID} not found`);
     }
   }
+  async completeOrder(orderData: any): Promise<void> {
+    try {
+      const { id, amount_total, customer_details, metadata } = orderData.object;
+      console.log('customer_details', customer_details);
+      // const userId = metadata.userId; // Assuming userId is passed in metadata
+      // const cart = await this.getCartByuserId(Number(userId));
 
+      // if (!cart || cart.items.length === 0) {
+      //   throw new NotFoundException(
+      //     `Cart for user with ID ${userId} is empty or not found.`,
+      //   );
+      // }
+
+      // Process the order: Save order details, mark cart as completed, etc.
+      // Example: Save order information to an "Order" entity if you have one
+      // Example code for saving order information
+      // const order = this.orderRepository.create({
+      //   cart: cart,
+      //   totalPrice: amount_total,
+      //   user: cart.user,
+      //   orderDate: new Date(),
+      // });
+      // await this.orderRepository.save(order);
+
+      // Clear the cart after the order is completed
+      // cart.items = [];
+      // await this.cartRepository.save(cart);
+
+      // // Log the completed order
+      // console.log(
+      //   `Order completed for user ${userId}. Checkout Session ID: ${id}, Total: ${amount_total}`,
+      // );
+
+      // Optionally: Send a confirmation email, update inventory, etc.
+    } catch (error) {
+      console.error('Error completing order:', error);
+      throw new Error('Error completing order');
+    }
+  }
   async addToCart(
     UserId: number,
     productId: number,
